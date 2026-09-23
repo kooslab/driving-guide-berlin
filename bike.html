@@ -514,7 +514,7 @@ class SceneView {
     this.actors = (scene.actors||[]).map((a,i)=>this.makeActor(a,i));
     const lastGroup = (scene.order||[]).length-1;
     this.goTs = []; { let tg=T_FIRST; (scene.order||[]).forEach(grp=>{ this.goTs.push(tg); const mx=Math.max(1, ...grp.map(id=>{ const d=(scene.actors||[]).find(a=>a.id===id)||{}; return d.travel||TRAVEL[d.kind]||2.4; })); tg += Math.max(T_GAP, mx*0.85+0.3); }); }
-    this.lights = scene.lights || computeLightPhases(scene, this.goTs);
+    this.lights = scene.lights || null;
     let end = lastGroup>=0 ? this.goTs[lastGroup] + 3.8 : 4.5;
     this.actors.forEach(a=>{ if(a.def.group==null && !a.def.through && a.def.kind==='ped' && a.def.autoGo) end=Math.max(end, 5); });
     this.duration = scene.duration || end;
@@ -700,6 +700,7 @@ const SCENES = [
   stvo:'§ 9 Abs. 3 StVO' },
 { id:'bk-turn-left-indirect', ch:3, title:'Left turn — two-stage (indirekt)', de:'Indirektes Linksabbiegen',
   road:{lights:['S','N','E','W']},
+  lights:[{at:0,S:'green',N:'green',E:'red',W:'red'}],
   actors:[{id:'you',kind:'you',from:'S'}],
   order:[['you']], duration:8,
   captions:['At a busy junction you can do a safer two-stage left turn: first go straight with the green.','Wait at the far corner facing your new direction.','When the new signal turns green, go. Two-stage — no crossing oncoming traffic.'],
@@ -731,6 +732,7 @@ const SCENES = [
 
 { id:'bk-lane-indirect-busy', ch:3, title:'Busy multi-lane: use the indirect turn', de:'Belebte Mehrspurstraße: indirekt abbiegen',
   road:{lights:['S','N','E','W']},
+  lights:[{at:0,S:'green',N:'green',E:'red',W:'red'}],
   extras:[`<line x1="20" y1="320" x2="20" y2="85" stroke="var(--paint)" stroke-width="2" stroke-dasharray="18 12" stroke-linecap="round"/>`],
   actors:[
     {id:'you',kind:'you',from:'S',through:true},
@@ -772,6 +774,7 @@ const SCENES = [
 
 { id:'bk-bikelane-left-indirect', ch:3, title:'2 car lanes + bike lane: indirect left turn', de:'2 Fahrstpuren + Radweg: indirektes Linksabbiegen',
   road:{bike:['NS'], lights:['S','N','E','W']},
+  lights:[{at:0,S:'green',N:'green',E:'red',W:'red'}],
   extras:[
     `<line x1="30" y1="320" x2="30" y2="85" stroke="var(--paint)" stroke-width="2" stroke-dasharray="14 10" stroke-linecap="round"/>`,
     `<rect x="68" y="-88" width="22" height="22" rx="3" fill="var(--go)" opacity="0.25" stroke="var(--go)" stroke-width="1.5" stroke-dasharray="4 3"/>`
@@ -789,6 +792,7 @@ const SCENES = [
 
 { id:'bk-bikelane-left-phase2', ch:3, title:'3 car lanes + bike lane: same indirect turn', de:'3 Fahrspuren + Radweg: gleiche Methode',
   road:{bike:['NS'], lights:['S','N','E','W']},
+  lights:[{at:0,S:'green',N:'green',E:'red',W:'red'}],
   extras:[
     `<line x1="20" y1="320" x2="20" y2="85" stroke="var(--paint)" stroke-width="2" stroke-dasharray="14 10" stroke-linecap="round"/>`,
     `<line x1="40" y1="320" x2="40" y2="85" stroke="var(--paint)" stroke-width="2" stroke-dasharray="14 10" stroke-linecap="round"/>`,
@@ -810,6 +814,7 @@ const SCENES = [
 // ===== Chapter 4: Traffic lights =====
 { id:'bk-ampel-red', ch:4, title:'Red light means stop — for cyclists too', de:'Rotlicht gilt auch für Radfahrer',
   road:{lights:['S']},
+  lights:[{at:0,S:'red'},{at:3.9,S:'green'}],
   actors:[{id:'you',kind:'you',from:'S'},{id:'a',kind:'car',from:'E',through:true,label:'Crossing traffic'}],
   order:[['a'],['you']],
   captions:['The light is red. Crossing traffic has green.','You must stop at the line — red applies to cyclists exactly as to cars.','Running a red light is a €60–100 fine. Wait for green.'],
@@ -818,6 +823,7 @@ const SCENES = [
   stvo:'§ 37 StVO' },
 { id:'bk-ampel-bike', ch:4, title:'Bike signal controls your phase', de:'Radfahrampel',
   road:{lights:['S']}, signs:[{code:'237',x:112,y:260,size:30}],
+  lights:[{at:0,S:'green'},{at:3.4,S:'red'},{at:4.1,S:'green'}],
   actors:[{id:'you',kind:'you',path:'M48 330 L48 0',stop:262},{id:'a',kind:'car',from:'S',through:true,delay:.6,label:'Car (different phase)'}],
   order:[['you'],['a']],
   captions:['A separate bike signal (small signal with a bicycle symbol) controls your phase.','When the bike signal turns green you may go — even if the car signal is still red.','Your own bike signal controls you. Ignore the car signal.'],
@@ -826,6 +832,7 @@ const SCENES = [
   stvo:'§ 37 StVO' },
 { id:'bk-aufstellflaeche', ch:4, title:'Advance box: filter to the front', de:'Aufstellfläche für Radfahrer',
   road:{lights:['S']},
+  lights:[{at:0,S:'red'},{at:1.6,S:'green'}],
   actors:[{id:'you',kind:'you',path:'M48 330 L48 0',stop:262},{id:'a',kind:'car',from:'S',delay:.5,label:'Car behind'}],
   order:[['you'],['a']], duration:8,
   captions:['A red light with a marked advance box for cyclists. The box is in front of the car stop line.','During red you may filter to the front and wait in the box. Cars stop behind the rear line.','When green, you set off first — before the cars.'],
@@ -834,6 +841,7 @@ const SCENES = [
   stvo:'§ 41 StVO, Zeichen 297' },
 { id:'bk-gruenpfeil', ch:4, title:'Green arrow: turn right on red', de:'Grüner Pfeil für Radfahrer',
   road:{lights:['S'],gruenpfeil:['S']}, signs:[{code:'720',x:112,y:58,size:30}],
+  lights:[{at:0,S:'red'}],
   actors:[{id:'you',kind:'you',from:'S',turn:'right'},{id:'a',kind:'car',from:'W',through:true,label:'Crossing traffic on green'}],
   order:[['a'],['you']],
   captions:['A small green arrow plate next to the red light.','You may turn right on red — but only after a full stop, and only if nobody is hindered.','Stop, look, yield to crossing traffic and pedestrians, then turn.'],

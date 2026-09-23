@@ -515,7 +515,7 @@ class SceneView {
     this.actors = (scene.actors||[]).map((a,i)=>this.makeActor(a,i));
     const lastGroup = (scene.order||[]).length-1;
     this.goTs = []; { let tg=T_FIRST; (scene.order||[]).forEach(grp=>{ this.goTs.push(tg); const mx=Math.max(1, ...grp.map(id=>{ const d=(scene.actors||[]).find(a=>a.id===id)||{}; return d.travel||TRAVEL[d.kind]||2.4; })); tg += Math.max(T_GAP, mx*0.85+0.3); }); }
-    this.lights = scene.lights || computeLightPhases(scene, this.goTs);
+    this.lights = scene.lights || null;
     let end = lastGroup>=0 ? this.goTs[lastGroup] + 3.8 : 4.5;
     this.actors.forEach(a=>{ if(a.def.group==null && !a.def.through && a.def.kind==='ped' && a.def.autoGo) end=Math.max(end, 5); });
     this.duration = scene.duration || end;
