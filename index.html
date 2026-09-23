@@ -161,8 +161,11 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   .main{padding:18px 16px 50px}
   .grid,.hero{grid-template-columns:1fr}
 }
+@keyframes capEnter { from{ opacity:0; transform:translateY(7px); } to{ opacity:1; transform:translateY(0); } }
+.caption.cap-enter { animation: capEnter .3s ease-out both; }
 @media (prefers-reduced-motion: reduce){
   .stage *{transition:none!important}
+  .caption.cap-enter{animation:none}
 }
 </style>
 <style>img{max-width:100%}[hidden]{display:none!important}</style>
@@ -1335,7 +1338,7 @@ function renderScene(id){
 }
 
 class Player {
-  constructor(view, ui){ this.view=view; this.ui=ui; this.speed=1; this.playing=false; this.loop=false; this.quiz=false; this.quizAsked=false; this.t=0; this.last=null; this.render(0);
+  constructor(view, ui){ this.view=view; this.ui=ui; this.speed=1; this.playing=false; this.loop=false; this.quiz=false; this.quizAsked=false; this.t=0; this.last=null; this._capIdx=-1; this.render(0);
     if(ui){ ui.play.onclick=()=> this.playing? this.pause(): this.play(); ui.step.onclick=()=> this.step(); ui.replay.onclick=()=> this.replay(); ui.speed.onclick=()=> this.toggleSpeed(); ui.quizBtn.onclick=()=> this.setQuiz(!this.quiz);
       const kf = view.keyframes; ui.tl.innerHTML='<i></i>'+kf.map(k=>`<b style="left:${(k/view.duration*100).toFixed(1)}%"></b>`).join('');
       ui.tl.onclick=(e)=>{ const r=ui.tl.getBoundingClientRect(); this.t = (e.clientX-r.left)/r.width*view.duration; this.render(this.t); }; }
@@ -1343,7 +1346,7 @@ class Player {
   play(){ if(this.t>=this.view.duration-0.01) this.t=0; this.playing=true; this.last=null; if(this.ui) this.ui.play.innerHTML=ICON.pause+' Pause'; this.raf=requestAnimationFrame(ts=>this.tick(ts)); }
   pause(){ this.playing=false; cancelAnimationFrame(this.raf); if(this.ui) this.ui.play.innerHTML=ICON.play+' Play'; }
   stop(){ this.pause(); }
-  replay(){ this.t=0; this.quizAsked=false; if(this.quiz){ this.view.quizHidden=true; this.ui.quiz.classList.add('hidden'); } this.render(0); this.play(); }
+  replay(){ this.t=0; this.quizAsked=false; this._capIdx=-1; if(this.quiz){ this.view.quizHidden=true; this.ui.quiz.classList.add('hidden'); } this.render(0); this.play(); }
   step(){ const kf=this.view.keyframes; const nxt = kf.find(k=>k>this.t+0.05); this.pause(); this.t = nxt!=null? nxt : this.view.duration; this.render(this.t); }
   toggleSpeed(){ this.speed = this.speed===1? .5 : 1; this.ui.speed.classList.toggle('on', this.speed!==1); }
   setQuiz(on){ this.quiz=on; try{ localStorage.setItem('bk-quiz', on?'1':'0'); }catch(e){} this.ui.quizBtn.classList.toggle('on',on); this.replay(); if(!on){ this.view.quizHidden=false; this.ui.quiz.classList.add('hidden'); this.render(this.t);} }
@@ -1354,7 +1357,9 @@ class Player {
   render(t){ const v=this.view; v.setTime(t); if(!this.ui) return; this.ui.tl.firstChild.style.width=(t/v.duration*100)+'%';
     const caps = v.scene.captions||[]; let ci=0; for(let i=1;i<caps.length;i++){ if(v.capTimes[i]!=null && t>=v.capTimes[i]) ci=i; }
     if(this.quiz && v.quizHidden && ci>0) ci=0;
-    const text = caps[ci]||''; this.ui.cap.innerHTML = text? `<span class="stepno">${ci===0?'start':'step '+ci}</span><span>${text}</span>`:''; }
+    const text = caps[ci]||'';
+    if(ci !== this._capIdx){ this._capIdx=ci; const cap=this.ui.cap; cap.classList.remove('cap-enter'); const inner=text?'<span class="stepno">'+(ci===0?'start':'step '+ci)+'</span><span>'+text+'</span>':''; cap.textContent=''; if(inner){ cap.insertAdjacentHTML('beforeend',inner); void cap.offsetWidth; cap.classList.add('cap-enter'); } }
+  }
   askQuiz(){ this.pause(); this.quizAsked=true; const v=this.view, s=v.scene; const q = s.quiz||{}; const ans = q.answer || (s.order&&s.order[0]) || [];
     const opts = (q.options || v.actors.filter(a=>!a.static && a.def.kind!=='ped').map(a=>a.id));
     this.ui.quiz.classList.remove('hidden');
