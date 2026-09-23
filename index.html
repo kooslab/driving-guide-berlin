@@ -88,15 +88,16 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .quiz .fb{margin-top:8px;font-size:14px}
 .quiz .fb.ok{color:var(--go)} .quiz .fb.no{color:var(--wait)}
 /* explain */
-.explain{display:flex;flex-direction:column;gap:14px}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
-.card h3{font:600 12px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
-.card p{margin:0;font-size:16px;max-width:62ch}
+.explain{display:flex;flex-direction:column;gap:0}
+.card{background:none;border:none;border-top:1px solid var(--line);border-radius:0;padding:18px 0}
+.card:first-child{border-top:none;padding-top:0}
+.card h3{font:500 10px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin:0 0 10px}
+.card p{margin:0;font-size:15px;max-width:62ch;line-height:1.6}
 .card p+p{margin-top:8px}
-.card.rule{border-left:4px solid var(--go)}
-.card.mistake{border-left:4px solid var(--wait)}
-.card.berlin{border-left:4px solid var(--bvg)}
-.card .stvo{display:inline-block;margin-top:10px;font:500 12px var(--mono);color:var(--muted);background:var(--surface-2);padding:3px 8px;border-radius:4px}
+.card.rule h3{color:var(--go)}
+.card.mistake h3{color:var(--wait)}
+.card.berlin h3{color:var(--warn)}
+.card .stvo{display:inline-block;margin-top:12px;font:500 11px var(--mono);color:var(--faint);border:1px solid var(--line);padding:2px 8px;border-radius:2px;letter-spacing:.04em}
 .signs{display:flex;flex-wrap:wrap;gap:10px}
 .signs .s{display:flex;align-items:center;gap:10px;background:var(--surface-2);border-radius:8px;padding:6px 10px 6px 6px;font-size:13px}
 .signs .s svg{width:38px;height:38px;flex:none}
@@ -142,6 +143,15 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .scenelist .de{font:italic 400 12px var(--body);color:var(--muted);display:block;margin-top:2px}
 .hidden{display:none!important}
 .menu-btn{display:none}
+/* floating next/prev — desktop only */
+.float-nav{display:none}
+@media (min-width:901px){
+  .float-nav{position:fixed;bottom:24px;right:28px;display:flex;gap:8px;z-index:50}
+  .float-nav button{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-radius:8px;border:1px solid var(--line);background:var(--surface);font:600 13px var(--body);color:var(--ink);box-shadow:var(--shadow);cursor:pointer;max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .float-nav button:hover{background:var(--surface-2)}
+  .float-nav button.fn-next{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+  .float-nav button.fn-next:hover{filter:brightness(1.08)}
+}
 @media (max-width:900px){
   .app{grid-template-columns:1fr}
   .rail{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);padding:12px 14px}
@@ -276,6 +286,7 @@ function actorPath(a){
 function ease(x){ x=Math.max(0,Math.min(1,x)); return x<.5? 2*x*x : 1-Math.pow(-2*x+2,2)/2; }
 function easeOut(x){ x=Math.max(0,Math.min(1,x)); return 1-Math.pow(1-x,3); }
 function easeIn(x){ x=Math.max(0,Math.min(1,x)); return x*x; }
+function ease3(x){ x=Math.max(0,Math.min(1,x)); const p=0.22,m=1/(1-p); if(x<p) return m*x*x/(2*p); if(x>1-p) return 1-m*(1-x)*(1-x)/(2*p); return m*(x-p/2); }
 
 function el(tag, attrs, parent){ const e=document.createElementNS(NS,tag); for(const k in attrs||{}) e.setAttribute(k, attrs[k]); if(parent) parent.appendChild(e); return e; }
 function txt(parent, x, y, s, attrs){ const t=el('text',Object.assign({x,y,'font-family':'Barlow Condensed, Arial Narrow, sans-serif','font-weight':'600','font-size':'13','text-anchor':'middle',fill:'#fff'},attrs||{}),parent); t.textContent=s; return t; }
@@ -512,14 +523,14 @@ class SceneView {
     const goT = a.def.goAt!=null ? a.def.goAt : (a.group!=null ? this.goTs[a.group] : null);
     let len, state;
     if(a.through){
-      if(goT==null){ len = Math.min(a.total, a.total*ease(t/(this.duration))); state='go'; }
+      if(goT==null){ len = Math.min(a.total, a.total*ease3(t/(this.duration))); state='go'; }
       else if(t<goT){ len = a.stop*easeOut(Math.max(0,t-a.delay)/(goT-a.delay)); state='approach'; }
-      else { len = a.stop + (a.total-a.stop)*ease((t-goT)/a.travel); state = t>goT+a.travel ? 'done':'go'; }
+      else { len = a.stop + (a.total-a.stop)*ease3((t-goT)/a.travel); state = t>goT+a.travel ? 'done':'go'; }
     } else {
       const tA = T_ARRIVE + a.delay;
       if(t<tA){ len = a.stop*easeOut(Math.max(0,t-a.delay)/T_ARRIVE); state='approach'; }
       else if(goT==null || t<goT){ len=a.stop; state='wait'; }
-      else { len = a.stop + (a.total-a.stop)*ease((t-goT)/a.travel); state = t>goT+a.travel ? 'done':'go'; }
+      else { len = a.stop + (a.total-a.stop)*ease3((t-goT)/a.travel); state = t>goT+a.travel ? 'done':'go'; }
     }
     return { len, state };
   }
@@ -1209,6 +1220,7 @@ let player = null;
 
 function route(){ const h = location.hash.replace('#','') || 'home'; const [k, v] = h.split('/');
   if(player){ player.stop(); player=null; }
+  const fn = document.querySelector('.float-nav'); if(fn) fn.remove();
   if(k==='s') renderScene(v); else if(k==='ch') renderChapter(+v); else if(k==='signs') renderGlossary(); else renderHome();
   renderNav(k, v); window.scrollTo(0,0); }
 window.addEventListener('hashchange', route);
@@ -1293,6 +1305,11 @@ function renderScene(id){
     </div>
     <div class="pager">${prev?`<button id="prevBtn"><small>← Previous</small><span>${prev.title}</span></button>`:'<span></span>'}${next?`<button id="nextBtn" class="next"><small>Next →</small><span>${next.title}</span></button>`:''}</div>`;
   if(prev) $('#prevBtn').onclick=()=> location.hash='s/'+prev.id; if(next) $('#nextBtn').onclick=()=> location.hash='s/'+next.id;
+  // floating desktop nav
+  const fn = document.createElement('div'); fn.className='float-nav';
+  if(prev){ const b=document.createElement('button'); b.className='fn-prev'; b.textContent='← '+prev.title.slice(0,28); b.onclick=()=>location.hash='s/'+prev.id; fn.appendChild(b); }
+  if(next){ const b=document.createElement('button'); b.className='fn-next'; b.textContent=next.title.slice(0,28)+' →'; b.onclick=()=>location.hash='s/'+next.id; fn.appendChild(b); }
+  document.body.appendChild(fn);
   const view = new SceneView($('#stage'), s);
   player = new Player(view, { tl:$('#tl'), cap:$('#cap'), quiz:$('#quiz'), play:$('#btnPlay'), step:$('#btnStep'), replay:$('#btnReplay'), speed:$('#btnSpeed'), quizBtn:$('#btnQuiz') });
   try{ if(localStorage.getItem('bk-quiz')==='1') player.setQuiz(true); }catch(e){}

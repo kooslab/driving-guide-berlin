@@ -88,15 +88,16 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .quiz .fb{margin-top:8px;font-size:14px}
 .quiz .fb.ok{color:var(--go)} .quiz .fb.no{color:var(--wait)}
 /* explain */
-.explain{display:flex;flex-direction:column;gap:14px}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
-.card h3{font:600 12px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
-.card p{margin:0;font-size:16px;max-width:62ch}
+.explain{display:flex;flex-direction:column;gap:0}
+.card{background:none;border:none;border-top:1px solid var(--line);border-radius:0;padding:18px 0}
+.card:first-child{border-top:none;padding-top:0}
+.card h3{font:500 10px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin:0 0 10px}
+.card p{margin:0;font-size:15px;max-width:62ch;line-height:1.6}
 .card p+p{margin-top:8px}
-.card.rule{border-left:4px solid var(--go)}
-.card.mistake{border-left:4px solid var(--wait)}
-.card.berlin{border-left:4px solid var(--bvg)}
-.card .stvo{display:inline-block;margin-top:10px;font:500 12px var(--mono);color:var(--muted);background:var(--surface-2);padding:3px 8px;border-radius:4px}
+.card.rule h3{color:var(--go)}
+.card.mistake h3{color:var(--wait)}
+.card.berlin h3{color:var(--warn)}
+.card .stvo{display:inline-block;margin-top:12px;font:500 11px var(--mono);color:var(--faint);border:1px solid var(--line);padding:2px 8px;border-radius:2px;letter-spacing:.04em}
 .signs{display:flex;flex-wrap:wrap;gap:10px}
 .signs .s{display:flex;align-items:center;gap:10px;background:var(--surface-2);border-radius:8px;padding:6px 10px 6px 6px;font-size:13px}
 .signs .s svg{width:38px;height:38px;flex:none}
@@ -142,6 +143,15 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .scenelist .de{font:italic 400 12px var(--body);color:var(--muted);display:block;margin-top:2px}
 .hidden{display:none!important}
 .menu-btn{display:none}
+/* floating next/prev — desktop only */
+.float-nav{display:none}
+@media (min-width:901px){
+  .float-nav{position:fixed;bottom:24px;right:28px;display:flex;gap:8px;z-index:50}
+  .float-nav button{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-radius:8px;border:1px solid var(--line);background:var(--surface);font:600 13px var(--body);color:var(--ink);box-shadow:var(--shadow);cursor:pointer;max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .float-nav button:hover{background:var(--surface-2)}
+  .float-nav button.fn-next{background:var(--go);color:#fff;border-color:var(--go)}
+  .float-nav button.fn-next:hover{filter:brightness(1.08)}
+}
 @media (max-width:900px){
   .app{grid-template-columns:1fr}
   .rail{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);padding:12px 14px}
@@ -277,6 +287,7 @@ function actorPath(a){
 function ease(x){ x=Math.max(0,Math.min(1,x)); return x<.5? 2*x*x : 1-Math.pow(-2*x+2,2)/2; }
 function easeOut(x){ x=Math.max(0,Math.min(1,x)); return 1-Math.pow(1-x,3); }
 function easeIn(x){ x=Math.max(0,Math.min(1,x)); return x*x; }
+function ease3(x){ x=Math.max(0,Math.min(1,x)); const p=0.22,m=1/(1-p); if(x<p) return m*x*x/(2*p); if(x>1-p) return 1-m*(1-x)*(1-x)/(2*p); return m*(x-p/2); }
 
 function el(tag, attrs, parent){ const e=document.createElementNS(NS,tag); for(const k in attrs||{}) e.setAttribute(k, attrs[k]); if(parent) parent.appendChild(e); return e; }
 function txt(parent, x, y, s, attrs){ const t=el('text',Object.assign({x,y,'font-family':'Barlow Condensed, Arial Narrow, sans-serif','font-weight':'600','font-size':'13','text-anchor':'middle',fill:'#fff'},attrs||{}),parent); t.textContent=s; return t; }
@@ -519,14 +530,14 @@ class SceneView {
     const goT = a.def.goAt!=null ? a.def.goAt : (a.group!=null ? this.goTs[a.group] : null);
     let len, state;
     if(a.through){
-      if(goT==null){ len = Math.min(a.total, a.total*ease(t/(this.duration))); state='go'; }
+      if(goT==null){ len = Math.min(a.total, a.total*ease3(t/(this.duration))); state='go'; }
       else if(t<goT){ len = a.stop*easeOut(Math.max(0,t-a.delay)/(goT-a.delay)); state='approach'; }
-      else { len = a.stop + (a.total-a.stop)*ease((t-goT)/a.travel); state = t>goT+a.travel ? 'done':'go'; }
+      else { len = a.stop + (a.total-a.stop)*ease3((t-goT)/a.travel); state = t>goT+a.travel ? 'done':'go'; }
     } else {
       const tA = T_ARRIVE + a.delay;
       if(t<tA){ len = a.stop*easeOut(Math.max(0,t-a.delay)/T_ARRIVE); state='approach'; }
       else if(goT==null || t<goT){ len=a.stop; state='wait'; }
-      else { len = a.stop + (a.total-a.stop)*ease((t-goT)/a.travel); state = t>goT+a.travel ? 'done':'go'; }
+      else { len = a.stop + (a.total-a.stop)*ease3((t-goT)/a.travel); state = t>goT+a.travel ? 'done':'go'; }
     }
     return { len, state };
   }
@@ -640,7 +651,7 @@ const SCENES = [
   stvo:'§ 41 StVO, Zeichen 237, § 2 Abs. 4 StVO' },
 { id:'bk-fahrradstrasse', ch:2, title:'Bicycle street: you set the pace', de:'Fahrradstraße',
   road:{type:'straight'}, signs:[{code:'244.1',x:86,y:260,size:34},{code:'kfzfrei',x:86,y:220,size:28}],
-  actors:[{id:'you',kind:'you',from:'S',through:true,travel:9},{id:'b1',kind:'bike',from:'S',through:true,travel:9,delay:.3,label:'Another cyclist'},{id:'a',kind:'car',from:'S',through:true,travel:9,delay:.8,label:'Car (guest)'}],
+  actors:[{id:'you',kind:'you',path:'M18 330 L18 -330',stop:0,through:true,travel:9},{id:'b1',kind:'bike',path:'M40 320 L40 -330',stop:0,through:true,travel:9,delay:.3,label:'Another cyclist'},{id:'a',kind:'car',path:'M30 330 L30 -330',stop:0,through:true,travel:9,delay:.8,label:'Car (guest)'}],
   order:[['you','b1','a']], duration:11,
   captions:['A Fahrradstraße. The plate says cars are allowed — as guests.','You and other cyclists own the lane; you may ride side by side.','The car follows at your pace — max 30 km/h. It may not push you or overtake at less than 1.5 m.'],
   rule:'In a bicycle street you set the tempo. Cyclists may ride two abreast. Cars (if the plate allows them) drive at most 30 km/h and must not push or overtake at less than 1.5 m. Honking is a fine.',
@@ -682,6 +693,98 @@ const SCENES = [
   mistake:'Turning left from the cycle path without merging — crossing oncoming traffic diagonally.',
   stvo:'§ 9 Abs. 1 StVO' },
 
+{ id:'bk-lane-merge-left', ch:3, title:'Two lanes: merge left before turning', de:'Zweispurig: Links einordnen',
+  road:{},
+  extras:[`<line x1="20" y1="320" x2="20" y2="85" stroke="var(--paint)" stroke-width="2" stroke-dasharray="18 12" stroke-linecap="round"/>`],
+  actors:[
+    {id:'you',kind:'you',path:'M30 330 L30 200 Q30 150 10 130 L10 72 C10 18 -38 2 -72 -30 L-330 -30',stop:245,indicator:-1,indFrom:.30},
+    {id:'a',kind:'car',from:'N',through:true,label:'Oncoming car',delay:.2},
+    {id:'b',kind:'car',path:'M40 330 L40 -330',stop:262,delay:.9,label:'Car: right lane'}
+  ],
+  order:[['a'],['you'],['b']],
+  captions:['A two-lane road — two lanes in your direction. You want to turn left at the junction. The right lane is for straight and right turns.','Signal left early. Check mirror and blind spot, then merge from the right lane into the left (inner) lane before reaching the junction.','Wait in the left lane for oncoming traffic to clear, then turn left. The car behind you continues straight in the right lane.'],
+  rule:'On a multi-lane road, move into the left lane well before the junction — not at the last moment. Signal early, check mirror and shoulder, merge gradually, then wait for oncoming traffic.',
+  mistake:'Turning left from the right lane. You cut across the left lane mid-junction — dangerous and illegal.',
+  stvo:'§ 9 Abs. 1 StVO' },
+
+{ id:'bk-lane-indirect-busy', ch:3, title:'Busy multi-lane: use the indirect turn', de:'Belebte Mehrspurstraße: indirekt abbiegen',
+  road:{lights:['S','N','E','W']},
+  extras:[`<line x1="20" y1="320" x2="20" y2="85" stroke="var(--paint)" stroke-width="2" stroke-dasharray="18 12" stroke-linecap="round"/>`],
+  actors:[
+    {id:'you',kind:'you',from:'S',through:true},
+    {id:'a',kind:'car',from:'N',through:true,label:'Oncoming — lane 1'},
+    {id:'b',kind:'car',path:'M-10 -330 L-10 330',stop:0,through:true,delay:.5,label:'Oncoming — lane 2'}
+  ],
+  order:[['a','b'],['you']], duration:9,
+  captions:['A busy multi-lane junction with two oncoming lanes. A direct left turn requires crossing both lanes at once — very risky if you misjudge.','Instead, do the indirect turn: go straight through with the green light, all the way to the far kerb.','Wait at the far corner facing your new direction. Go with the next green. Two stages — you never cross oncoming traffic.'],
+  rule:'At a multi-lane junction, the indirect left turn (indirektes Linksabbiegen) is the safest choice. You never cut across oncoming lanes — go straight, wait, then proceed. Always allowed; often the only safe option on busy roads.',
+  mistake:'Attempting a direct left turn across two oncoming lanes because you see a gap in the first lane. The second lane car is often hidden behind the first vehicle.',
+  stvo:'§ 9 StVO' },
+
+{ id:'bk-lane-both-gaps', ch:3, title:'Direct left: all oncoming lanes must clear', de:'Direktes Linksabbiegen: alle Spuren müssen frei sein',
+  road:{},
+  extras:[`<line x1="-20" y1="-320" x2="-20" y2="85" stroke="var(--paint)" stroke-width="2" stroke-dasharray="18 12" stroke-linecap="round"/>`],
+  actors:[
+    {id:'you',kind:'you',path:'M10 330 L10 72 C10 18 -38 2 -72 -30 L-330 -30',stop:258,indicator:-1,indFrom:.0},
+    {id:'a',kind:'car',from:'N',through:true,label:'Oncoming — lane 1',delay:.1},
+    {id:'b',kind:'car',path:'M-10 -330 L-10 330',stop:0,through:true,delay:1.1,label:'Oncoming — lane 2'}
+  ],
+  order:[['a','b'],['you']],
+  captions:['You are in the left lane wanting to turn left. Two lanes of oncoming traffic approach — at different gaps.','The first lane clears. But the second lane still has a car. You must wait — a gap in one lane is not a gap in both.','Only when all oncoming lanes are simultaneously clear can you complete the turn.'],
+  rule:'When turning left across multiple oncoming lanes, you need a gap in ALL of them at the same time. A clear near lane does not mean the far lane is safe. Commit to the turn only when the full road is empty.',
+  mistake:'Starting the left turn as soon as the nearest lane clears. The far-lane car is often hidden in the first car\'s blind spot.',
+  stvo:'§ 9 Abs. 3 StVO' },
+
+{ id:'bk-single-lane-left', ch:3, title:'Single-lane road: direct left turn from bike lane', de:'Einspurige Straße: direktes Linksabbiegen',
+  road:{bike:['NS']}, signs:[{code:'237',x:112,y:260,size:30}],
+  actors:[
+    {id:'you',kind:'you',path:'M82 330 L82 200 Q82 145 30 125 L30 72 C30 18 -36 8 -72 -30 L-330 -30',stop:278,indicator:-1,indFrom:.15},
+    {id:'a',kind:'car',from:'N',through:true,label:'Oncoming car'},
+    {id:'b',kind:'car',from:'S',through:true,delay:.5,label:'Car behind'}
+  ],
+  order:[['a'],['you'],['b']],
+  captions:['Single-lane road with a bike lane. One lane each direction. You want to turn left.','Signal left early. Check your mirror, then merge from the bike lane into the centre of the road well before the junction.','Wait for the oncoming car to pass, then turn left. The car behind waits for you.'],
+  rule:'On a single-lane road the direct left turn is practical: leave the bike lane early, signal left, merge to the centre, yield to oncoming traffic, then turn. This is the one case where merging into the car lane makes sense.',
+  mistake:'Staying in the bike lane all the way to the junction and cutting across — you cross oncoming traffic at a diagonal from the wrong position.',
+  stvo:'§ 9 Abs. 1 StVO' },
+
+{ id:'bk-bikelane-left-indirect', ch:3, title:'2 car lanes + bike lane: indirect left turn', de:'2 Fahrstpuren + Radweg: indirektes Linksabbiegen',
+  road:{bike:['NS'], lights:['S','N','E','W']},
+  extras:[
+    `<line x1="30" y1="320" x2="30" y2="85" stroke="var(--paint)" stroke-width="2" stroke-dasharray="14 10" stroke-linecap="round"/>`,
+    `<rect x="68" y="-88" width="22" height="22" rx="3" fill="var(--go)" opacity="0.25" stroke="var(--go)" stroke-width="1.5" stroke-dasharray="4 3"/>`
+  ],
+  actors:[
+    {id:'you',kind:'you',path:'M82 330 L82 -66 Q82 -86 58 -86 L-330 -86',stop:0,through:true,travel:5,indicator:-1,indFrom:.88},
+    {id:'a',kind:'car',path:'M42 330 L42 -330',stop:0,through:true,label:'Lane 2 — straight'},
+    {id:'b',kind:'car',path:'M18 330 L18 72 C18 15 -40 5 -72 -30 L-330 -30',stop:0,through:true,label:'Lane 1 — left turn',indicator:-1,indFrom:.0}
+  ],
+  order:[['a','b'],['you']], duration:13,
+  captions:['Green light. Lane 1 turns left. Lane 2 goes straight. You are in the bike lane, also wanting to turn left.','The N-S traffic clears. Now you go: straight through the junction in your bike lane. You do not touch the car lanes.','Past the junction, you curve left at the far-right corner (green box) and exit west. That is your left turn — no lane changes at all.'],
+  rule:'From the bike lane, wait for the N-S flow to clear, then go straight through and curve west at the far corner. You and the lane 1 car both end up heading west — but via completely different parts of the junction, at different times.',
+  mistake:'Merging left into lane 1 to turn with the cars. Crossing lane 2 and lane 1 in moving traffic is dangerous — the indirect turn gets you to the same place safely.',
+  stvo:'§ 9 StVO' },
+
+{ id:'bk-bikelane-left-phase2', ch:3, title:'3 car lanes + bike lane: same indirect turn', de:'3 Fahrspuren + Radweg: gleiche Methode',
+  road:{bike:['NS'], lights:['S','N','E','W']},
+  extras:[
+    `<line x1="20" y1="320" x2="20" y2="85" stroke="var(--paint)" stroke-width="2" stroke-dasharray="14 10" stroke-linecap="round"/>`,
+    `<line x1="40" y1="320" x2="40" y2="85" stroke="var(--paint)" stroke-width="2" stroke-dasharray="14 10" stroke-linecap="round"/>`,
+    `<rect x="68" y="-88" width="22" height="22" rx="3" fill="var(--go)" opacity="0.25" stroke="var(--go)" stroke-width="1.5" stroke-dasharray="4 3"/>`
+  ],
+  actors:[
+    {id:'you',kind:'you',path:'M82 330 L82 -66 Q82 -86 58 -86 L-330 -86',stop:0,through:true,travel:5,indicator:-1,indFrom:.88},
+    {id:'a',kind:'car',path:'M50 330 L50 -330',stop:0,through:true,label:'Lane 3 — straight'},
+    {id:'b',kind:'car',path:'M28 330 L28 -330',stop:0,through:true,delay:.3,label:'Lane 2 — straight'},
+    {id:'c',kind:'car',path:'M10 330 L10 72 C10 15 -40 5 -72 -30 L-330 -30',stop:0,through:true,label:'Lane 1 — left turn',indicator:-1,indFrom:.0}
+  ],
+  order:[['a','b','c'],['you']], duration:14,
+  captions:['Three car lanes beside your bike lane — Lane 1 turns left, lanes 2 and 3 go straight. Green light.','The car lanes clear. You go straight through in your bike lane, same as before. Three lanes or two — your path is identical.','At the far-right corner, curve west. The number of car lanes does not change your procedure.'],
+  rule:'No matter how many car lanes — 2, 3, or more — the indirect left turn from the bike lane is always the same: wait for N-S traffic to clear, go straight through, curve west at the far corner.',
+  mistake:'Thinking that fewer cars on a given day makes it safe to merge across all lanes for a direct turn.',
+  berlin:'Frankfurter Allee, Karl-Marx-Allee, and Schönhauser Allee all have 2–3 car lanes beside mandatory bike lanes. Indirect left turns are the norm.',
+  stvo:'§ 9 StVO' },
+
 // ===== Chapter 4: Traffic lights =====
 { id:'bk-ampel-red', ch:4, title:'Red light means stop — for cyclists too', de:'Rotlicht gilt auch für Radfahrer',
   road:{lights:['S']},
@@ -693,7 +796,7 @@ const SCENES = [
   stvo:'§ 37 StVO' },
 { id:'bk-ampel-bike', ch:4, title:'Bike signal controls your phase', de:'Radfahrampel',
   road:{lights:['S']}, signs:[{code:'237',x:112,y:260,size:30}],
-  actors:[{id:'you',kind:'you',from:'S'},{id:'a',kind:'car',from:'S',through:true,delay:.6,label:'Car (different phase)'}],
+  actors:[{id:'you',kind:'you',path:'M48 330 L48 0',stop:262},{id:'a',kind:'car',from:'S',through:true,delay:.6,label:'Car (different phase)'}],
   order:[['you'],['a']],
   captions:['A separate bike signal (small signal with a bicycle symbol) controls your phase.','When the bike signal turns green you may go — even if the car signal is still red.','Your own bike signal controls you. Ignore the car signal.'],
   rule:'A dedicated bike signal (Radfahrampel) takes precedence over the adjacent car signal for cyclists. Go when your signal is green. If there is no bike signal, the regular car signal applies to you.',
@@ -701,7 +804,7 @@ const SCENES = [
   stvo:'§ 37 StVO' },
 { id:'bk-aufstellflaeche', ch:4, title:'Advance box: filter to the front', de:'Aufstellfläche für Radfahrer',
   road:{lights:['S']},
-  actors:[{id:'you',kind:'you',from:'S'},{id:'a',kind:'car',from:'S',delay:.5,label:'Car behind'}],
+  actors:[{id:'you',kind:'you',path:'M48 330 L48 0',stop:262},{id:'a',kind:'car',from:'S',delay:.5,label:'Car behind'}],
   order:[['you'],['a']], duration:8,
   captions:['A red light with a marked advance box for cyclists. The box is in front of the car stop line.','During red you may filter to the front and wait in the box. Cars stop behind the rear line.','When green, you set off first — before the cars.'],
   rule:'The advance box (Aufstellfläche) lets cyclists filter to the front during red. Stop within the box — not in front of it. The front line is your stop line.',
@@ -784,7 +887,7 @@ const SCENES = [
 const CHAPTERS = [
   { n:1, title:'Right-of-way at crossings', de:'Vorfahrt', desc:'Rechts-vor-Links, priority roads and give-way triangles — all apply to cyclists exactly as to cars.' },
   { n:2, title:'Bike infrastructure', de:'Radwege & Straßen', desc:'Mandatory cycle paths, dashed and solid lanes, bicycle streets — where you must ride and who yields.' },
-  { n:3, title:'Turning', de:'Abbiegen', desc:'Right turns, direct and two-stage left turns, and leaving the cycle lane safely.' },
+  { n:3, title:'Turning', de:'Abbiegen', desc:'Right turns, direct and two-stage left turns, leaving the cycle lane, and navigating multi-lane roads safely.' },
   { n:4, title:'Traffic lights', de:'Ampeln', desc:'Bike signals, the advance box, the green arrow, and why red always means stop.' },
   { n:5, title:'Trams and dooring', de:'Straßenbahn & Türen', desc:'Crossing tram tracks, the door zone, and what to do at a tram stop without an island.' },
   { n:6, title:'Special cases', de:'Sonderfälle', desc:'One-way streets open both ways, living streets, sidewalk rules, and railway crossings.' },
@@ -795,6 +898,7 @@ let player = null;
 
 function route(){ const h = location.hash.replace('#','') || 'home'; const [k, v] = h.split('/');
   if(player){ player.stop(); player=null; }
+  const fn = document.querySelector('.float-nav'); if(fn) fn.remove();
   if(k==='s') renderScene(v); else if(k==='ch') renderChapter(+v); else if(k==='signs') renderGlossary(); else renderHome();
   renderNav(k, v); window.scrollTo(0,0); }
 window.addEventListener('hashchange', route);
@@ -879,6 +983,11 @@ function renderScene(id){
     </div>
     <div class="pager">${prev?`<button id="prevBtn"><small>← Previous</small><span>${prev.title}</span></button>`:'<span></span>'}${next?`<button id="nextBtn" class="next"><small>Next →</small><span>${next.title}</span></button>`:''}</div>`;
   if(prev) $('#prevBtn').onclick=()=> location.hash='s/'+prev.id; if(next) $('#nextBtn').onclick=()=> location.hash='s/'+next.id;
+  // floating desktop nav
+  const fn = document.createElement('div'); fn.className='float-nav';
+  if(prev){ const b=document.createElement('button'); b.className='fn-prev'; b.textContent='← '+prev.title.slice(0,28); b.onclick=()=>location.hash='s/'+prev.id; fn.appendChild(b); }
+  if(next){ const b=document.createElement('button'); b.className='fn-next'; b.textContent=next.title.slice(0,28)+' →'; b.onclick=()=>location.hash='s/'+next.id; fn.appendChild(b); }
+  document.body.appendChild(fn);
   const view = new SceneView($('#stage'), s);
   player = new Player(view, { tl:$('#tl'), cap:$('#cap'), quiz:$('#quiz'), play:$('#btnPlay'), step:$('#btnStep'), replay:$('#btnReplay'), speed:$('#btnSpeed'), quizBtn:$('#btnQuiz') });
   try{ if(localStorage.getItem('bk-quiz')==='1') player.setQuiz(true); }catch(e){}
