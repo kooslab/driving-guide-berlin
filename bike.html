@@ -1,0 +1,922 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Animated guide to Berlin cycling rules: right-of-way at crossings, bike infrastructure, turning, traffic lights, trams and dooring.">
+<title>Berlin Radfahren</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#F3F4F1; --surface:#FFFFFF; --surface-2:#E9EBE6; --line:#D3D6CF;
+  --ink:#1B1F26; --muted:#5C6470; --faint:#8A919B;
+  --accent:#1F5FBF; --accent-ink:#FFFFFF; --accent-soft:#DCE6F7;
+  --bvg:#F2D53C; --go:#2A9D5C; --go-soft:#DDF1E5; --wait:#D23B3B; --wait-soft:#F8DEDE; --warn:#C9860B; --warn-soft:#F7EBD1;
+  --asphalt:#45484E; --asphalt-2:#3B3E44; --paint:#ECE9DC; --kerb:#B9BDB3; --ground:#CFD3C8; --grass:#B8C9AA;
+  --shadow:0 1px 2px rgba(20,24,30,.08),0 8px 24px rgba(20,24,30,.08);
+  --display:"Barlow Condensed","Arial Narrow","Helvetica Neue",Arial,sans-serif;
+  --body:"Source Sans 3","Segoe UI",Helvetica,Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171B; --surface:#1E2126; --surface-2:#262A30; --line:#343940;
+    --ink:#E8EAE6; --muted:#A5ACB6; --faint:#737A85;
+    --accent:#6D9BE8; --accent-ink:#0F1621; --accent-soft:#233450;
+    --go:#4DBF7E; --go-soft:#1E3A2B; --wait:#E5605E; --wait-soft:#43262A; --warn:#E0A63A; --warn-soft:#3E3320;
+    --asphalt:#3A3D43; --asphalt-2:#30333A; --paint:#DCD8C8; --kerb:#5B6068; --ground:#2A2E33; --grass:#2F3A2C;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171B; --surface:#1E2126; --surface-2:#262A30; --line:#343940;
+  --ink:#E8EAE6; --muted:#A5ACB6; --faint:#737A85;
+  --accent:#6D9BE8; --accent-ink:#0F1621; --accent-soft:#233450;
+  --go:#4DBF7E; --go-soft:#1E3A2B; --wait:#E5605E; --wait-soft:#43262A; --warn:#E0A63A; --warn-soft:#3E3320;
+  --asphalt:#3A3D43; --asphalt-2:#30333A; --paint:#DCD8C8; --kerb:#5B6068; --ground:#2A2E33; --grass:#2F3A2C;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html{font-size:16px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.app{display:grid;grid-template-columns:256px minmax(0,1fr);min-height:100vh}
+/* rail */
+.rail{border-right:1px solid var(--line);background:var(--surface);position:sticky;top:0;height:100vh;overflow-y:auto;padding:20px 14px 28px}
+.brand{display:flex;align-items:center;gap:10px;padding:2px 6px 16px;border-bottom:1px solid var(--line);margin-bottom:12px}
+.brand .mark{width:34px;height:34px;flex:none}
+.brand h1{font:700 22px/1 var(--display);margin:0;letter-spacing:.01em}
+.brand small{display:block;font:400 12px/1.2 var(--body);color:var(--muted);margin-top:3px}
+.rail nav button{display:flex;width:100%;align-items:center;gap:10px;padding:8px 8px;border-radius:6px;text-align:left;font-size:14px;color:var(--ink)}
+.rail nav button:hover{background:var(--surface-2)}
+.rail nav button[aria-current="true"]{background:var(--accent-soft);color:var(--ink);font-weight:600}
+.rail nav .num{font:500 11px var(--mono);color:var(--faint);width:18px;flex:none}
+.rail nav .cnt{margin-left:auto;font:500 11px var(--mono);color:var(--faint)}
+.rail .sep{height:1px;background:var(--line);margin:10px 6px}
+.rail .eyebrow{font:600 11px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding:8px 8px 4px}
+/* main */
+.main{padding:28px 36px 60px;max-width:1180px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.crumb{font:600 12px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.crumb b{color:var(--accent)}
+.progress{font:500 12px var(--mono);color:var(--faint)}
+.scene-head h2{font:700 clamp(28px,3.4vw,40px)/1.05 var(--display);margin:0;text-wrap:balance}
+.scene-head .de{font:italic 400 17px var(--body);color:var(--muted);margin:4px 0 0}
+.grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(300px,.85fr);gap:24px;margin-top:18px;align-items:start}
+.stage{background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);overflow:hidden}
+.stage > svg{display:block;width:100%;height:auto;background:var(--ground)}
+.controls{display:flex;align-items:center;gap:6px;padding:10px 12px;border-top:1px solid var(--line);flex-wrap:wrap}
+.controls button{display:inline-flex;align-items:center;gap:6px;padding:7px 11px;border-radius:6px;border:1px solid var(--line);background:var(--surface);font-size:13px;font-weight:600;color:var(--ink)}
+.controls button:hover{background:var(--surface-2)}
+.controls button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.controls button.primary:hover{filter:brightness(1.08)}
+.controls button.on{background:var(--accent-soft);border-color:var(--accent)}
+.controls .spacer{flex:1}
+.controls svg{width:14px;height:14px;fill:currentColor}
+.timeline{height:4px;background:var(--surface-2);position:relative}
+.timeline i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);width:0}
+.timeline b{position:absolute;top:-2px;width:2px;height:8px;background:var(--faint);margin-left:-1px}
+.caption{padding:12px 14px;min-height:56px;font-size:15px;border-top:1px solid var(--line);display:flex;gap:10px;align-items:flex-start}
+.caption .stepno{flex:none;font:500 12px var(--mono);color:var(--accent);background:var(--accent-soft);border-radius:4px;padding:2px 6px;margin-top:2px}
+.quiz{padding:12px 14px;border-top:1px solid var(--line);background:var(--warn-soft)}
+.quiz p{margin:0 0 8px;font-weight:600}
+.quiz .opts{display:flex;flex-wrap:wrap;gap:6px}
+.quiz .opts button{padding:6px 10px;border-radius:6px;border:1px solid var(--line);background:var(--surface);font-size:13px;font-weight:600}
+.quiz .opts button .dot{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.quiz .fb{margin-top:8px;font-size:14px}
+.quiz .fb.ok{color:var(--go)} .quiz .fb.no{color:var(--wait)}
+/* explain */
+.explain{display:flex;flex-direction:column;gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.card h3{font:600 12px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+.card p{margin:0;font-size:16px;max-width:62ch}
+.card p+p{margin-top:8px}
+.card.rule{border-left:4px solid var(--go)}
+.card.mistake{border-left:4px solid var(--wait)}
+.card.berlin{border-left:4px solid var(--bvg)}
+.card .stvo{display:inline-block;margin-top:10px;font:500 12px var(--mono);color:var(--muted);background:var(--surface-2);padding:3px 8px;border-radius:4px}
+.signs{display:flex;flex-wrap:wrap;gap:10px}
+.signs .s{display:flex;align-items:center;gap:10px;background:var(--surface-2);border-radius:8px;padding:6px 10px 6px 6px;font-size:13px}
+.signs .s svg{width:38px;height:38px;flex:none}
+.signs .s b{display:block;font-weight:600}
+.signs .s span{color:var(--muted);font-size:12px}
+.legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 14px;font-size:13px}
+.legend div{display:flex;align-items:center;gap:8px}
+.legend i{display:inline-block;width:14px;height:22px;border-radius:3px;flex:none}
+.legend .badge{width:auto;height:auto;font:600 10px var(--body);padding:2px 6px;border-radius:999px;letter-spacing:.06em;color:#fff;font-style:normal}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:24px}
+.pager button{display:flex;flex-direction:column;gap:2px;padding:12px 16px;border:1px solid var(--line);border-radius:10px;background:var(--surface);max-width:46%;text-align:left}
+.pager button:hover{background:var(--surface-2)}
+.pager button.next{text-align:right;margin-left:auto}
+.pager small{font:600 11px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.pager span{font:700 18px/1.1 var(--display)}
+/* home */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:28px;align-items:center;margin-bottom:26px}
+.hero h2{font:700 clamp(36px,5vw,56px)/1 var(--display);margin:0 0 10px;text-wrap:balance}
+.hero p{font-size:17px;color:var(--muted);max-width:58ch;margin:0 0 8px}
+.hero .stage{margin:0}
+.chapters{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.chapters button{text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+.chapters button:hover{border-color:var(--accent)}
+.chapters .num{font:500 11px var(--mono);color:var(--faint)}
+.chapters .t{font:700 20px/1.1 var(--display)}
+.chapters .d{font-size:13px;color:var(--muted)}
+.chapters .c{font:500 11px var(--mono);color:var(--accent);margin-top:4px}
+.section-title{font:700 24px/1.1 var(--display);margin:30px 0 10px}
+/* glossary */
+.gloss{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px}
+.gloss .g{display:flex;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.gloss .g svg{width:56px;height:56px;flex:none}
+.gloss .g b{display:block;font-weight:600}
+.gloss .g .code{font:500 11px var(--mono);color:var(--faint)}
+.gloss .g p{margin:2px 0 0;font-size:13px;color:var(--muted)}
+.gloss .g a{font-size:12px}
+/* scene list in chapter view */
+.scenelist{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.scenelist button{text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:0;overflow:hidden;display:flex;flex-direction:column}
+.scenelist button:hover{border-color:var(--accent)}
+.scenelist .th > svg{width:100%;height:auto;background:var(--ground);display:block}
+.scenelist .t{padding:8px 12px 10px;font:700 17px/1.15 var(--display)}
+.scenelist .de{font:italic 400 12px var(--body);color:var(--muted);display:block;margin-top:2px}
+.hidden{display:none!important}
+.menu-btn{display:none}
+@media (max-width:900px){
+  .app{grid-template-columns:1fr}
+  .rail{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);padding:12px 14px}
+  .rail nav{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+  .rail nav button{width:auto;white-space:nowrap;padding:6px 10px}
+  .rail nav .cnt,.rail .sep,.rail .eyebrow{display:none}
+  .main{padding:18px 16px 50px}
+  .grid,.hero{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion: reduce){
+  .stage *{transition:none!important}
+}
+</style>
+<style>img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<div class="app">
+  <aside class="rail">
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 40 40" aria-hidden="true"><rect x="2" y="2" width="36" height="36" rx="6" fill="#3DAE6B"/><rect x="9" y="9" width="22" height="22" fill="#fff"/><circle cx="20" cy="20" r="7" fill="#3DAE6B"/></svg>
+      <div><h1>Berlin Radfahren</h1><small>Rules of the road for cyclists</small></div>
+      <a href="/" style="display:inline-flex;align-items:center;gap:5px;margin-top:8px;padding:4px 10px;border-radius:99px;background:var(--accent-soft);color:var(--accent);font:600 12px var(--body);text-decoration:none;white-space:nowrap">🚗 Auto guide →</a>
+    </div>
+    <nav id="nav" aria-label="Chapters"></nav>
+  </aside>
+  <main class="main" id="main"></main>
+</div>
+<script>
+// ---- Traffic sign library (simplified vector versions of German StVO signs) ----
+const SIGN_RED = '#C8102E', SIGN_BLUE = '#0F4C9A', SIGN_WHITE = '#FFFFFF', SIGN_BLACK = '#111111', SIGN_YELLOW = '#F5C400', SIGN_GREEN = '#1E9E4A';
+function triDown(fill, stroke){ return `<path d="M6 12 H94 L50 90 Z" fill="${fill}" stroke="${stroke}" stroke-width="10" stroke-linejoin="round"/>`; }
+function triUp(inner){ return `<path d="M50 10 L94 88 H6 Z" fill="${SIGN_WHITE}" stroke="${SIGN_RED}" stroke-width="10" stroke-linejoin="round"/>${inner||''}`; }
+function circleBlue(inner){ return `<circle cx="50" cy="50" r="46" fill="${SIGN_BLUE}" stroke="${SIGN_WHITE}" stroke-width="4"/>${inner||''}`; }
+function circleRed(inner){ return `<circle cx="50" cy="50" r="46" fill="${SIGN_WHITE}" stroke="${SIGN_RED}" stroke-width="10"/>${inner||''}`; }
+function rectBlue(inner){ return `<rect x="4" y="4" width="92" height="92" rx="6" fill="${SIGN_BLUE}" stroke="${SIGN_WHITE}" stroke-width="3"/>${inner||''}`; }
+function plate(inner){ return `<rect x="4" y="4" width="92" height="92" rx="5" fill="${SIGN_WHITE}" stroke="${SIGN_BLACK}" stroke-width="3"/>${inner||''}`; }
+function arrowUp(x,y,s,fill){ return `<path transform="translate(${x} ${y}) scale(${s})" d="M0 -22 L12 -6 H5 V22 H-5 V-6 H-12 Z" fill="${fill}"/>`; }
+function bikeIcon(fill){ return `<g fill="none" stroke="${fill}" stroke-width="5" stroke-linecap="round"><circle cx="30" cy="62" r="14"/><circle cx="70" cy="62" r="14"/><path d="M30 62 L45 36 H62 L70 62 M45 36 L52 62 M40 36 H52"/></g>`; }
+function pedIcon(x,y,s,fill){ return `<g transform="translate(${x} ${y}) scale(${s})" fill="${fill}"><circle cx="0" cy="-22" r="6"/><path d="M-4 -14 H4 L8 4 L4 4 L4 22 H-1 L-1 6 L-4 22 H-9 L-6 4 L-8 -2 Z"/></g>`; }
+function carIcon(x,y,s,fill){ return `<g transform="translate(${x} ${y}) scale(${s})" fill="${fill}"><path d="M-22 6 L-16 -8 L-6 -14 H8 L18 -8 L22 6 V12 H-22 Z"/><circle cx="-12" cy="12" r="5"/><circle cx="12" cy="12" r="5"/></g>`; }
+function bentLine(from, to){ // priority-plate line, 'from'/'to' in S,N,E,W ; thick black line
+  const P = {S:[50,92],N:[50,8],E:[92,50],W:[8,50]};
+  const a=P[from], b=P[to];
+  return `<path d="M${a[0]} ${a[1]} L50 50 L${b[0]} ${b[1]}" fill="none" stroke="${SIGN_BLACK}" stroke-width="12" stroke-linejoin="round"/>`;
+}
+function thinArms(list){ return list.map(d=>{const P={S:[50,92],N:[50,8],E:[92,50],W:[8,50]};const a=P[d];return `<path d="M50 50 L${a[0]} ${a[1]}" stroke="${SIGN_BLACK}" stroke-width="4"/>`;}).join(''); }
+
+const SIGNS = {
+  '205': { name:'Vorfahrt gewähren', en:'Give way', desc:'Upside-down triangle. Others go first — you may roll on without stopping if the road is clear.', svg: () => triDown(SIGN_WHITE, SIGN_RED) },
+  '206': { name:'Stop', en:'Stop and give way', desc:'Come to a full stop at the line (or where you can see), then go only when clear. A "rolling stop" is a fine.', svg: () => `<path d="M30 4 H70 L96 30 V70 L70 96 H30 L4 70 V30 Z" fill="${SIGN_RED}" stroke="${SIGN_WHITE}" stroke-width="4"/><text x="50" y="60" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="28" fill="#fff">STOP</text>` },
+  '301': { name:'Vorfahrt', en:'Priority at the next intersection only', desc:'You go first at the next crossing. After that, right-before-left is back unless another sign says otherwise.', svg: () => triUp() },
+  '306': { name:'Vorfahrtstraße', en:'Priority road', desc:'Yellow diamond: you have priority at every crossing until sign 307 ends it. Side streets must give way to you.', svg: () => `<path d="M50 4 L96 50 L50 96 L4 50 Z" fill="${SIGN_WHITE}"/><path d="M50 16 L84 50 L50 84 L16 50 Z" fill="${SIGN_YELLOW}"/>` },
+  '307': { name:'Ende der Vorfahrtstraße', en:'End of priority road', desc:'Priority road ends here. From the next crossing, right-before-left applies again unless signed.', svg: () => `<path d="M50 4 L96 50 L50 96 L4 50 Z" fill="${SIGN_WHITE}"/><path d="M50 16 L84 50 L50 84 L16 50 Z" fill="${SIGN_YELLOW}"/><path d="M20 80 L80 20 M28 88 L88 28 M12 72 L72 12" stroke="${SIGN_BLACK}" stroke-width="4"/>` },
+  '102': { name:'Kreuzung mit Vorfahrt von rechts', en:'Crossing ahead — right before left', desc:'Warning: at the next crossing, whoever comes from the right goes first. Slow down and look right.', svg: () => triUp(`<path d="M50 34 V78 M30 56 H70" stroke="${SIGN_BLACK}" stroke-width="9"/>`) },
+  '1002-10': { name:'Abknickende Vorfahrt (von unten nach rechts)', en:'Priority road bends right', desc:'The thick line shows where the priority road goes. If you follow the bend, you keep priority — but you must signal.', svg: () => plate(thinArms(['N']) + bentLine('S','E')) },
+  '1002-20': { name:'Abknickende Vorfahrt (von unten nach links)', en:'Priority road bends left', desc:'The thick line shows where the priority road goes. Follow the bend with your indicator on; you keep priority.', svg: () => plate(thinArms(['N']) + bentLine('S','W')) },
+  '1002-11': { name:'Abknickende Vorfahrt (Seitenstraße)', en:'Priority road bends, seen from the side street', desc:'You are on the thin line. The priority road runs across and bends — everything on the thick line goes before you.', svg: () => plate(thinArms(['S']) + bentLine('W','N')) },
+  '215': { name:'Kreisverkehr', en:'Roundabout', desc:'Together with the give-way triangle: cars already in the roundabout go first. No indicator when entering, indicator when leaving.', svg: () => circleBlue(`<g fill="none" stroke="#fff" stroke-width="7"><path d="M50 22 A28 28 0 1 0 74 36"/><path d="M50 22 A28 28 0 0 0 26 36" /></g><path d="M70 22 L80 40 L60 40 Z" fill="#fff"/><path d="M22 60 L20 40 L36 52 Z" fill="#fff"/><path d="M52 82 L70 72 L66 88 Z" fill="#fff"/>`) },
+  '220': { name:'Einbahnstraße', en:'One-way street', desc:'Traffic only flows in the arrow direction. Priority rules do not change — right-before-left still applies at unsigned crossings.', svg: () => `<rect x="2" y="26" width="96" height="48" fill="${SIGN_BLUE}" stroke="#fff" stroke-width="3"/><path d="M14 50 H70 L58 36 M70 50 L58 64" fill="none" stroke="#fff" stroke-width="8"/><text x="50" y="72" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="8" fill="#fff">Einbahnstraße</text>` },
+  '209': { name:'Vorgeschriebene Fahrtrichtung rechts', en:'You must turn right', desc:'Blue circle with an arrow: the only allowed direction. Common at the end of one-way streets and side roads onto main roads.', svg: () => circleBlue(`<path d="M28 50 H66 L54 36 M66 50 L54 64" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>`) },
+  '209-10': { name:'Vorgeschriebene Fahrtrichtung geradeaus', en:'Straight ahead only', desc:'No turning at this crossing.', svg: () => circleBlue(arrowUp(50,50,1.4,'#fff')) },
+  '720': { name:'Grünpfeil', en:'Green arrow plate', desc:'Small green arrow next to the red light: you may turn right on red — but only after a full stop, and only if nobody (especially cyclists and pedestrians) is hindered.', svg: () => `<rect x="4" y="4" width="92" height="92" fill="${SIGN_BLACK}"/><path d="M22 50 H66 L52 32 M66 50 L52 68" fill="none" stroke="${SIGN_GREEN}" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>` },
+  '325.1': { name:'Verkehrsberuhigter Bereich', en:'Traffic-calmed area (living street)', desc:'Walking pace only, pedestrians may use the whole street, children may play. When you leave the area you must give way to everyone.', svg: () => rectBlue(`<rect x="14" y="14" width="72" height="72" fill="#fff"/><path d="M20 44 L36 30 L52 44 Z" fill="${SIGN_BLUE}"/><rect x="24" y="44" width="24" height="18" fill="${SIGN_BLUE}"/>${carIcon(68,72,.55,SIGN_BLUE)}${pedIcon(30,76,.55,SIGN_BLUE)}${pedIcon(52,80,.4,SIGN_BLUE)}<circle cx="62" cy="40" r="5" fill="${SIGN_BLUE}"/>`) },
+  '325.2': { name:'Ende des verkehrsberuhigten Bereichs', en:'End of traffic-calmed area', desc:'Leaving the living street: you have no priority. Let cars, bikes and pedestrians on the road go first.', svg: () => rectBlue(`<rect x="14" y="14" width="72" height="72" fill="#fff"/><path d="M20 44 L36 30 L52 44 Z" fill="${SIGN_BLUE}"/><rect x="24" y="44" width="24" height="18" fill="${SIGN_BLUE}"/>${carIcon(68,72,.55,SIGN_BLUE)}${pedIcon(30,76,.55,SIGN_BLUE)}<path d="M18 82 L82 18" stroke="${SIGN_RED}" stroke-width="6"/>`) },
+  '274.1': { name:'Tempo-30-Zone', en:'30 km/h zone', desc:'Whole area is 30 km/h. Inside a 30 zone crossings are usually unsigned — expect right-before-left everywhere.', svg: () => plate(`<text x="50" y="30" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="16" fill="${SIGN_BLACK}">ZONE</text><circle cx="50" cy="62" r="26" fill="#fff" stroke="${SIGN_RED}" stroke-width="6"/><text x="50" y="71" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="24" fill="${SIGN_BLACK}">30</text>`) },
+  '274-30': { name:'Zulässige Höchstgeschwindigkeit 30', en:'Speed limit 30 km/h', desc:'Berlin has 30 km/h on many main roads (often at night or near schools). Check the extra plate for times.', svg: () => circleRed(`<text x="50" y="64" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="40" fill="${SIGN_BLACK}">30</text>`) },
+  '244.1': { name:'Fahrradstraße', en:'Bicycle street', desc:'Bicycles own the street and may ride side by side. Cars only if a plate allows it (e.g. "Anlieger frei"), max 30 km/h, and you must not push cyclists.', svg: () => plate(`<circle cx="50" cy="44" r="30" fill="${SIGN_BLUE}" stroke="#fff" stroke-width="2"/><g transform="translate(50 44) scale(.5) translate(-50 -50)">${bikeIcon('#fff')}</g><text x="50" y="88" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="11" fill="${SIGN_BLACK}">Fahrradstraße</text>`) },
+  '237': { name:'Radweg', en:'Cycle path', desc:'Cyclists must use it. When you turn across it, cyclists going straight have priority — in both directions if the path is two-way.', svg: () => circleBlue(`<g transform="translate(50 50) scale(.62) translate(-50 -50)">${bikeIcon('#fff')}</g>`) },
+  '224': { name:'Haltestelle', en:'Bus / tram stop', desc:'Green H on yellow. Pass a stopped bus or tram carefully; with hazard lights on, walking pace only and no overtaking while it approaches.', svg: () => `<circle cx="50" cy="50" r="46" fill="${SIGN_YELLOW}" stroke="${SIGN_GREEN}" stroke-width="5"/><text x="50" y="68" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="52" fill="${SIGN_GREEN}">H</text>` },
+  '201': { name:'Andreaskreuz', en:'Railway crossing', desc:'Trains and trams on their own track always go first. Never enter if you would have to stop on the tracks.', svg: () => `<path d="M12 18 L88 82 M88 18 L12 82" stroke="${SIGN_WHITE}" stroke-width="20" stroke-linecap="round"/><path d="M12 18 L88 82 M88 18 L12 82" stroke="${SIGN_RED}" stroke-width="14" stroke-linecap="round"/><path d="M28 32 L72 68 M72 32 L28 68" stroke="#fff" stroke-width="5"/>` },
+  '350': { name:'Fußgängerüberweg', en:'Zebra crossing', desc:'Pedestrians who want to cross have priority. Approach slowly, be ready to stop, and never overtake at a zebra crossing.', svg: () => rectBlue(`<path d="M22 40 L78 40 L92 84 H8 Z" fill="#fff"/><g fill="${SIGN_BLUE}"><path d="M30 42 L56 42 L64 84 H40 Z" /><path d="M64 42 L78 42 L92 84 H76 Z" /></g>${pedIcon(50,58,1,SIGN_BLACK)}`) },
+  '283': { name:'Absolutes Halteverbot', en:'No stopping', desc:'Not even for a moment. Arrows on the sign show whether it applies before, after, or both.', svg: () => `<circle cx="50" cy="50" r="46" fill="${SIGN_BLUE}" stroke="${SIGN_RED}" stroke-width="9"/><path d="M22 22 L78 78 M78 22 L22 78" stroke="${SIGN_RED}" stroke-width="8"/>` },
+  '286': { name:'Eingeschränktes Halteverbot', en:'No parking (stopping up to 3 min allowed)', desc:'You may stop for up to 3 minutes to load or let someone out, but not park.', svg: () => `<circle cx="50" cy="50" r="46" fill="${SIGN_BLUE}" stroke="${SIGN_RED}" stroke-width="9"/><path d="M78 22 L22 78" stroke="${SIGN_RED}" stroke-width="8"/>` },
+  '314': { name:'Parken', en:'Parking', desc:'Parking allowed. Check the plate: residents (Bewohner), Parkscheibe, times, or "mit Parkschein".', svg: () => rectBlue(`<text x="50" y="72" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="62" fill="#fff">P</text>`) },
+  '270.1': { name:'Umweltzone', en:'Low-emission zone', desc:'Inside the Berlin S-Bahn ring you need a green environmental sticker (Plakette) on the windscreen.', svg: () => plate(`<text x="50" y="26" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="12" fill="${SIGN_BLACK}">UMWELT</text><circle cx="50" cy="58" r="26" fill="#fff" stroke="${SIGN_RED}" stroke-width="6"/><text x="50" y="66" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="20" fill="${SIGN_BLACK}">ZONE</text>`) },
+  '267': { name:'Verbot der Einfahrt', en:'No entry', desc:'Usually the other end of a one-way street. Cyclists may be allowed by a plate — expect bikes coming toward you.', svg: () => `<circle cx="50" cy="50" r="46" fill="${SIGN_RED}" stroke="#fff" stroke-width="4"/><rect x="18" y="42" width="64" height="16" fill="#fff"/>` },
+  '245': { name:'Bussonderfahrstreifen', en:'Bus lane', desc:'Only buses (and often taxis, bikes — see plate). Cars may cross it to turn right, giving way to buses and cyclists in it.', svg: () => circleBlue(`<rect x="24" y="30" width="52" height="34" rx="4" fill="#fff"/><rect x="30" y="36" width="40" height="14" fill="${SIGN_BLUE}"/><circle cx="34" cy="68" r="5" fill="#fff"/><circle cx="66" cy="68" r="5" fill="#fff"/>`) },
+  '1022-10': { name:'Radverkehr frei', en:'Bicycles allowed', desc:'Plate under a sign: cyclists may go where the sign forbids others. Under a no-entry sign it means bikes will come toward you.', svg: () => plate(`<g transform="translate(50 40) scale(.5) translate(-50 -50)">${bikeIcon(SIGN_BLACK)}</g><text x="50" y="84" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="16" fill="${SIGN_BLACK}">frei</text>`) },
+  '1020-30': { name:'Anlieger frei', en:'Residents and visitors allowed', desc:'Only people with business on the street may drive in — but that includes visitors and deliveries.', svg: () => plate(`<text x="50" y="45" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="17" fill="${SIGN_BLACK}">Anlieger</text><text x="50" y="72" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="17" fill="${SIGN_BLACK}">frei</text>`) },
+  '239': { name:'Gehweg', en:'Pavement / footpath', desc:'Pedestrians only. Cyclists may ride here only if a "Radfahrer frei" plate is attached below this sign.', svg: () => rectBlue(`${pedIcon(50,50,1,'#fff')}`) },
+  '1000-32': { name:'Radfahrer kreuzen', en:'Cyclists cross from both sides', desc:'Plate under a warning sign: expect bikes crossing from left and right, e.g. a two-way cycle path.', svg: () => plate(`<g transform="translate(50 42) scale(.5) translate(-50 -50)">${bikeIcon(SIGN_BLACK)}</g><path d="M14 78 H86 M22 72 L14 78 L22 84 M78 72 L86 78 L78 84" fill="none" stroke="${SIGN_BLACK}" stroke-width="4"/>`) },
+  '138': { name:'Radverkehr', en:'Warning: cyclists', desc:'Cyclists cross or join here. Look twice before turning.', svg: () => triUp(`<g transform="translate(50 60) scale(.42) translate(-50 -50)">${bikeIcon(SIGN_BLACK)}</g>`) },
+  '136': { name:'Kinder', en:'Warning: children', desc:'School or playground nearby. Slow down, be ready to brake.', svg: () => triUp(`${pedIcon(44,60,.7,SIGN_BLACK)}${pedIcon(58,64,.5,SIGN_BLACK)}`) },
+  '151': { name:'Bahnübergang', en:'Railway crossing ahead', desc:'Warning before a rail or tram crossing without barriers.', svg: () => triUp(`<path d="M32 74 H68 M36 48 L64 48 M50 40 V78" stroke="${SIGN_BLACK}" stroke-width="6"/><path d="M34 80 Q50 52 66 80" fill="none" stroke="${SIGN_BLACK}" stroke-width="5"/>`) },
+  '250': { name:'Verbot für Fahrzeuge aller Art', en:'No vehicles', desc:'Closed to all vehicles unless a plate makes an exception (often "Anlieger frei" or "Radverkehr frei").', svg: () => circleRed() },
+  'kfzfrei': { name:'Kfz frei', en:'Motor vehicles allowed', desc:'Plate under a bicycle-street sign: cars may use the street — as guests, at 30 km/h max.', svg: () => plate(`${carIcon(50,44,.9,SIGN_BLACK)}<text x="50" y="84" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="16" fill="${SIGN_BLACK}">frei</text>`) },
+  'bewohner': { name:'Bewohner mit Parkausweis', en:'Residents with permit', desc:'Plate under a parking sign in Berlin parking zones: without a resident permit you need a ticket from the machine — or cannot park at all, depending on the plate.', svg: () => plate(`<text x="50" y="40" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="12" fill="${SIGN_BLACK}">Bewohner mit</text><text x="50" y="58" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="12" fill="${SIGN_BLACK}">Parkausweis</text><text x="50" y="80" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="12" fill="${SIGN_BLACK}">frei</text>`) },
+  'parkscheibe': { name:'Parkscheibe', en:'Parking disc required', desc:'Set the blue disc to the next half hour after you arrive, place it on the dashboard. Time limit is on the plate.', svg: () => plate(`<circle cx="40" cy="44" r="22" fill="${SIGN_BLUE}"/><path d="M40 44 V26 M40 44 L52 52" stroke="#fff" stroke-width="4" stroke-linecap="round"/><text x="50" y="86" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="12" fill="${SIGN_BLACK}">2 Std.</text>`) },
+};
+function signSVG(code, size, extraClass){
+  const s = SIGNS[code]; if(!s) return '';
+  return `<svg viewBox="0 0 100 100" width="${size||40}" height="${size||40}" class="${extraClass||''}" role="img" aria-label="${s.name}">${s.svg()}</svg>`;
+}
+// ---- Scene engine: roads, actors, timeline ----
+const NS = 'http://www.w3.org/2000/svg';
+const VB = '-320 -320 640 640';
+const T_ARRIVE = 1.4, T_FIRST = 2.0, T_GAP = 1.9;
+const TRAVEL = { car: 2.4, you: 2.4, tram: 3.0, bus: 2.8, bike: 2.6, ped: 3.4, ambulance: 1.8 };
+const COL = { you:'#3DAE6B', bvg:'#F2D53C', bike:'#3DAE6B', ped:'#F3EBD3', amb:'#F7F7F7', cars:['#D5D9DE','#D8C39A','#9C7A5A','#7FA5B5'] };
+const ROT = { S:0, W:90, N:180, E:270 };
+
+function rotPt(x,y,deg){ const a=deg*Math.PI/180, c=Math.cos(a), s=Math.sin(a); return [Math.round((x*c - y*s)*100)/100, Math.round((x*s + y*c)*100)/100]; }
+function rotPath(cmds, deg){
+  return cmds.map(c=>{
+    const k=c[0];
+    if(k==='A'){ const [x,y]=rotPt(c[6],c[7],deg); return ['A',c[1],c[2],c[3],c[4],c[5],x,y]; }
+    const out=[k]; for(let i=1;i<c.length;i+=2){ const [x,y]=rotPt(c[i],c[i+1],deg); out.push(x,y); } return out;
+  });
+}
+function pathStr(cmds){ return cmds.map(c=>c[0]+c.slice(1).join(' ')).join(' '); }
+
+// Base paths: vehicle coming FROM the south (bottom), driving up in the right-hand lane (x=+30).
+const BASE = {
+  straight: { cmds:[['M',30,330],['L',30,-330]], stop:262 },
+  right:    { cmds:[['M',30,330],['L',30,72],['Q',30,30,72,30],['L',330,30]], stop:258 },
+  left:     { cmds:[['M',30,330],['L',30,72],['C',30,18,-36,8,-72,-30],['L',-330,-30]], stop:258 },
+  leftwide: { cmds:[['M',30,330],['L',30,72],['C',30,-10,10,-30,-72,-30],['L',-330,-30]], stop:258 },
+  uturn:    { cmds:[['M',30,330],['L',30,72],['C',30,-10,-30,-10,-30,72],['L',-30,330]], stop:258 },
+  bike:     { cmds:[['M',82,330],['L',82,-330]], stop:262 },
+  bikeright:{ cmds:[['M',82,330],['L',82,110],['Q',82,82,110,82],['L',330,82]], stop:220 },
+  ped:      { cmds:[['M',100,132],['L',100,-132]], stop:30 },   // crosses the EAST arm, walking north, on the near side
+  pedfar:   { cmds:[['M',-100,132],['L',-100,-132]], stop:30 }, // crosses the WEST arm
+  // roundabout (ring radius 90, entering from south)
+  r1: { cmds:[['M',30,330],['L',30,150],['Q',30,100,58,69],['A',90,90,0,0,0,69,58],['Q',95,35,150,30],['L',330,30]], stop:180 },
+  r2: { cmds:[['M',30,330],['L',30,150],['Q',30,100,58,69],['A',90,90,0,0,0,69,-58],['Q',60,-100,30,-150],['L',30,-330]], stop:180 },
+  r3: { cmds:[['M',30,330],['L',30,150],['Q',30,100,58,69],['A',90,90,0,1,0,-58,-69],['Q',-100,-60,-150,-30],['L',-330,-30]], stop:180 },
+};
+function actorPath(a){
+  if(a.path) return { d:a.path, stop:a.stop==null?258:a.stop };
+  const b = BASE[a.turn||'straight']; const deg = ROT[a.from||'S'];
+  return { d: pathStr(rotPath(b.cmds, deg)), stop: a.stop==null? b.stop : a.stop };
+}
+function ease(x){ x=Math.max(0,Math.min(1,x)); return x<.5? 2*x*x : 1-Math.pow(-2*x+2,2)/2; }
+function easeOut(x){ x=Math.max(0,Math.min(1,x)); return 1-Math.pow(1-x,3); }
+function easeIn(x){ x=Math.max(0,Math.min(1,x)); return x*x; }
+
+function el(tag, attrs, parent){ const e=document.createElementNS(NS,tag); for(const k in attrs||{}) e.setAttribute(k, attrs[k]); if(parent) parent.appendChild(e); return e; }
+function txt(parent, x, y, s, attrs){ const t=el('text',Object.assign({x,y,'font-family':'Barlow Condensed, Arial Narrow, sans-serif','font-weight':'600','font-size':'13','text-anchor':'middle',fill:'#fff'},attrs||{}),parent); t.textContent=s; return t; }
+
+// ---------- road drawing ----------
+function drawRoad(svg, road){
+  const g = el('g',{class:'road'},svg);
+  const type = road.type||'cross';
+  if(type==='none') return g;
+  const arms = (road.arms) || (type==='T' ? ['N','E','S','W'].filter(d=>d!==road.missing) : type==='straight' ? ['N','S'] : ['N','E','S','W']);
+  const paint = 'var(--paint)', asphalt = road.calmed ? '#8C8F94' : 'var(--asphalt)';
+  // corner blocks (buildings)
+  const blocks = el('g',{fill:'var(--surface-2)'},g);
+  [[-320,-320],[100,-320],[-320,100],[100,100]].forEach(([x,y])=> el('rect',{x,y,width:220,height:220},blocks));
+  // sidewalk band
+  const sw = el('g',{fill:'var(--kerb)'},g);
+  const armRect = (d, w, len, parent, fill) => {
+    const r = el('rect',{x:-w/2, y:0, width:w, height:len, fill},parent);
+    r.setAttribute('transform', `rotate(${ROT[d]})`);
+    return r;
+  };
+  if(type==='round'){
+    el('circle',{cx:0,cy:0,r:158,fill:'var(--kerb)'},g);
+    arms.forEach(d=>armRect(d,200,330,sw));
+    el('circle',{cx:0,cy:0,r:122,fill:asphalt},g);
+    arms.forEach(d=>armRect(d,120,330,g,asphalt));
+    el('circle',{cx:0,cy:0,r:122,fill:asphalt},g);
+    el('circle',{cx:0,cy:0,r:road.mini?34:58,fill:road.mini?'#B7B4A8':'var(--grass)',stroke:paint,'stroke-width':road.mini?0:3},g);
+    if(road.mini) el('circle',{cx:0,cy:0,r:34,fill:'none',stroke:paint,'stroke-width':3,'stroke-dasharray':'8 6'},g);
+    // give-way dashes at each entry
+    arms.forEach(d=>{ const p=el('path',{d:'M4 150 H56',stroke:paint,'stroke-width':5,'stroke-dasharray':'8 6'},g); p.setAttribute('transform',`rotate(${ROT[d]})`); });
+    return g;
+  }
+  if(road.diag){ // one arm rotated by an angle
+    const dg = el('g',{transform:`rotate(${road.diag.angle})`},sw);
+    armRect(road.diag.dir,200,360,dg);
+  }
+  const isN = d=> road.narrow && road.narrow.includes(d), isD = d=> road.dirt && road.dirt.includes(d);
+  arms.forEach(d=>{ if(road.diag && road.diag.dir===d) return; if(isD(d)) return; armRect(d, isN(d)?150:200, 330, sw); });
+  (road.extra||[]).forEach(x=>{ const eg=el('g',{transform:`rotate(${x.angle})`},sw); armRect('S',200,360,eg); });
+  el('rect',{x:-100,y:-100,width:200,height:200,fill:'var(--kerb)'},g);
+  // asphalt
+  const asp = el('g',{fill:asphalt},g);
+  if(road.diag){ const dg = el('g',{transform:`rotate(${road.diag.angle})`},asp); armRect(road.diag.dir,120,360,dg,asphalt); }
+  arms.forEach(d=>{ if(road.diag && road.diag.dir===d) return; if(isD(d)){ const r=armRect(d,64,330,asp,'#8A7A5C'); const dots=el('g',{fill:'#6E5F45',transform:`rotate(${ROT[d]})`},g); for(let y=80;y<330;y+=22){ el('circle',{cx:-14+(y%44?8:0),cy:y,r:2.5},dots); el('circle',{cx:12-(y%44?6:0),cy:y+9,r:2},dots);} return; } armRect(d, isN(d)?72:120, 330, asp, asphalt); });
+  (road.extra||[]).forEach(x=>{ const eg=el('g',{transform:`rotate(${x.angle})`},asp); armRect('S',120,360,eg,asphalt); const p=el('path',{d:'M0 66 V330',stroke:paint,'stroke-width':3,'stroke-dasharray':'14 10',fill:'none'},eg); });
+  el('rect',{x:-60,y:-60,width:120,height:120,fill:asphalt},asp);
+  if(road.calmed){ // paving dots
+    const pv = el('g',{fill:'#9EA1A6'},g);
+    for(let x=-52;x<=52;x+=16) for(let y=-320;y<=320;y+=16) el('circle',{cx:x,cy:y,r:2},pv);
+  }
+  // centre lines
+  const mk = el('g',{stroke:paint,'stroke-width':3,fill:'none'},g);
+  arms.forEach(d=>{
+    if(road.oneway && road.oneway[d]) return; if(isN(d)||isD(d)) return;
+    const solid = road.solid && road.solid.includes(d);
+    const p = el('path',{d:'M0 66 V330','stroke-dasharray': solid?'':'14 10'},mk);
+    let tr = `rotate(${ROT[d]})`; if(road.diag && road.diag.dir===d) tr = `rotate(${road.diag.angle}) `+tr; p.setAttribute('transform',tr);
+  });
+  // stop lines (solid) and wait lines (dashed)
+  (road.stop||[]).forEach(d=>{ const p=el('path',{d:`M2 68 H${isN(d)?34:58}`,stroke:paint,'stroke-width':6},g); p.setAttribute('transform',`rotate(${ROT[d]})`); });
+  (road.wait||[]).forEach(d=>{ const p=el('path',{d:`M2 68 H${isN(d)?34:58}`,stroke:paint,'stroke-width':6,'stroke-dasharray':'9 6'},g); p.setAttribute('transform',`rotate(${ROT[d]})`); });
+  // one-way arrows on the asphalt
+  if(road.oneway){ for(const d in road.oneway){ const dir=road.oneway[d]; const a=el('g',{fill:paint,opacity:.85},g);
+    el('path',{d:'M0 -28 L14 -8 H6 V28 H-6 V-8 H-14 Z'},a); // 'in' = flowing toward the crossing
+    a.setAttribute('transform', `rotate(${ROT[d]}) translate(0 200) rotate(${dir==='in'?0:180})`);
+  } }
+  // tram tracks
+  if(road.tracks){ const tr = el('g',{stroke:'#C9C5B8','stroke-width':1.6,fill:'none',opacity:.9},g);
+    const dirs = road.tracks==='NS'?['S']:road.tracks==='EW'?['W']:['S','W'];
+    dirs.forEach(d=>{ (road.tracksCenter?[-19,-9,9,19]:[-38,-22,22,38]).forEach(x=>{ const p=el('path',{d:`M${x} -330 V330`},tr); p.setAttribute('transform',`rotate(${ROT[d]})`); }); });
+  }
+  // cycle paths beside the road (x = ±82)
+  if(road.bike){ const bk = el('g',{fill:'#B8654F',opacity:.85},g);
+    road.bike.forEach(ax=>{ const d = ax==='NS'?'S':'W'; [-1,1].forEach(s=>{ const r=el('rect',{x:s*74-(s<0?16:0),y:-330,width:16,height:660},bk); r.setAttribute('transform',`rotate(${ROT[d]})`); });
+      // through the crossing, dashed edges
+      const dd = el('g',{stroke:paint,'stroke-width':2,'stroke-dasharray':'6 6',fill:'none'},g);
+      [[-90,-74],[74,90]].forEach(([a,b])=>{ const p=el('path',{d:`M${a} -100 V100 M${b} -100 V100`},dd); p.setAttribute('transform',`rotate(${ROT[d]})`); });
+    });
+  }
+  // bike lane painted on the carriageway (Radfahrstreifen) on the right of the S approach
+  if(road.bikeLane){ road.bikeLane.forEach(d=>{ const r=el('rect',{x:40,y:66,width:18,height:264,fill:'#B8654F',opacity:.85},g); r.setAttribute('transform',`rotate(${ROT[d]})`);
+    const l=el('path',{d:'M40 66 V330',stroke:paint,'stroke-width':2.5,'stroke-dasharray': road.bikeLaneSolid?'':'8 8'},g); l.setAttribute('transform',`rotate(${ROT[d]})`); }); }
+  // bus lane on the right of the S approach
+  if(road.busLane){ road.busLane.forEach(d=>{ const r=el('rect',{x:4,y:66,width:54,height:264,fill:'#5A5D62'},g); r.setAttribute('transform',`rotate(${ROT[d]})`);
+    const l=el('path',{d:'M4 66 V330',stroke:paint,'stroke-width':4},g); l.setAttribute('transform',`rotate(${ROT[d]})`);
+    const t=txt(g,30,250,'BUS',{fill:paint,'font-size':20}); t.setAttribute('transform',`rotate(${ROT[d]}) rotate(180 30 250)`); }); }
+  // zebra crossings
+  (road.zebra||[]).forEach(d=>{ const z=el('g',{fill:paint},g); for(let i=-56;i<60;i+=16) el('rect',{x:i,y:-112,width:9,height:24},z); z.setAttribute('transform',`rotate(${ROT[d]})`); });
+  // driveway / parking exit on the east side of a straight N-S road
+  if(road.driveway){ const dw = el('g',{},g); const y = road.driveway.y||150;
+    el('rect',{x:60,y:y-26,width:80,height:52,fill:'var(--kerb)'},dw);
+    el('rect',{x:100,y:y-20,width:220,height:40,fill:asphalt,opacity:.9},dw);
+    el('rect',{x:60,y:y-20,width:44,height:40,fill:'#9A9D9A'},dw); // lowered kerb / sidewalk continues
+    el('path',{d:`M62 ${y-20} V${y+20}`,stroke:'#9A9D9A','stroke-width':4},dw);
+    if(road.driveway.label){ txt(dw,210,y+5,road.driveway.label,{fill:paint,'font-size':14}); }
+  }
+  // bus stop bay on the right side of the S arm
+  if(road.busStop){ const bs = el('g',{},g); const d = road.busStop;
+    const p = el('path',{d:'M58 120 L44 132 L58 144 L44 156 L58 168 L44 180 L58 192 L44 204 L58 216',stroke:paint,'stroke-width':3,fill:'none'},bs);
+    const t = txt(bs,18,180,'BUS',{fill:paint,'font-size':18,'transform':'rotate(-90 18 180)'});
+    bs.setAttribute('transform',`rotate(${ROT[d]})`);
+    if(d==='S'){ const sg = el('g',{transform:'translate(84 168)'},g); sg.innerHTML = signSVG('224',26).replace('<svg','<svg x="-13" y="-13"'); }
+  }
+  // Fahrradstraße pictograms
+  if(road.fahrrad){ const f = el('g',{fill:paint,opacity:.9},g); [-250,-150,150,250].forEach(y=>{ const b=el('g',{transform:`translate(0 ${y}) scale(.4) translate(-50 -50)`},f); b.innerHTML = bikeIcon('var(--paint)'); }); }
+  // bike box (Aufstellfläche) at the S approach: bikes wait in front of the cars
+  if(road.bikeBox){ const b=el('g',{},g); el('rect',{x:2,y:50,width:56,height:30,fill:'#3F8F5E',opacity:.9},b); const bi=el('g',{transform:'translate(30 65) scale(.3) translate(-50 -50)'},b); bi.innerHTML=bikeIcon('#fff'); el('path',{d:'M2 84 H58',stroke:paint,'stroke-width':6},b); }
+  // level crossing
+  if(road.rail){ const r = el('g',{},g); el('rect',{x:-330,y:-16,width:660,height:32,fill:'#7B7F86'},r); [-8,8].forEach(y=> el('path',{d:`M-330 ${y} H330`,stroke:'#C9C5B8','stroke-width':2},r)); }
+  return g;
+}
+
+// ---------- signs & lights ----------
+const SIGN_POS = { S:[86,112], W:[-112,86], N:[-86,-112], E:[112,-86] };
+const SIGN_STACK = { S:[0,44], W:[-44,0], N:[0,-44], E:[44,0] };
+function drawSigns(svg, signs){
+  const g = el('g',{class:'signs'},svg); const counts = {};
+  (signs||[]).forEach(s=>{
+    let x,y; if(s.x!=null){ x=s.x; y=s.y; } else { const at=s.at||'S'; const n=counts[at]||0; counts[at]=n+1; x=SIGN_POS[at][0]+SIGN_STACK[at][0]*n; y=SIGN_POS[at][1]+SIGN_STACK[at][1]*n; }
+    const size = s.size||40;
+    const w = el('g',{transform:`translate(${x-size/2} ${y-size/2})`},g);
+    el('circle',{cx:size/2,cy:size/2,r:size/2+3,fill:'rgba(0,0,0,.25)'},w);
+    if(s.back){ const k=size/100; w.innerHTML += s.code==='206' ? `<path transform="scale(${k})" d="M30 4 H70 L96 30 V70 L70 96 H30 L4 70 V30 Z" fill="#8E9196" stroke="#6C6F74" stroke-width="4"/>` : `<path transform="scale(${k})" d="M6 12 H94 L50 90 Z" fill="#8E9196" stroke="#6C6F74" stroke-width="6" stroke-linejoin="round"/>`; }
+    else w.innerHTML += signSVG(s.code,size);
+  });
+  return g;
+}
+const LIGHT_POS = { S:[86,58], W:[-58,86], N:[-86,-58], E:[58,-86] };
+function drawLights(svg, road){
+  const heads = {};
+  if(!road.lights) return heads;
+  const g = el('g',{class:'lights'},svg);
+  road.lights.forEach(d=>{
+    const [x,y] = LIGHT_POS[d];
+    const h = el('g',{transform:`translate(${x} ${y})`},g);
+    el('rect',{x:-9,y:-24,width:18,height:48,rx:4,fill:'#111'},h);
+    const lamps = { red: el('circle',{cx:0,cy:-14,r:5.5,fill:'#3a1a1a'},h), yellow: el('circle',{cx:0,cy:0,r:5.5,fill:'#3a3418'},h), green: el('circle',{cx:0,cy:14,r:5.5,fill:'#173a22'},h) };
+    const arrow = el('path',{d:'M-4 14 H3 M1 11 L4 14 L1 17',stroke:'#0b2a14','stroke-width':1.6,fill:'none',opacity:0},h);
+    if(road.gruenpfeil && road.gruenpfeil.includes(d)){ const p=el('g',{transform:'translate(11 -22)'},h); p.innerHTML = signSVG('720',16); }
+    heads[d] = { lamps, arrow };
+  });
+  return heads;
+}
+function setLight(head, state, t){
+  const L = head.lamps; const off = { red:'#3a1a1a', yellow:'#3a3418', green:'#173a22' };
+  L.red.setAttribute('fill', off.red); L.yellow.setAttribute('fill', off.yellow); L.green.setAttribute('fill', off.green); head.arrow.setAttribute('opacity',0);
+  const on = { red:'#FF3B30', yellow:'#FFC300', green:'#34D058' };
+  if(state==='red') L.red.setAttribute('fill',on.red);
+  else if(state==='yellow') L.yellow.setAttribute('fill',on.yellow);
+  else if(state==='green') L.green.setAttribute('fill',on.green);
+  else if(state==='redyellow'){ L.red.setAttribute('fill',on.red); L.yellow.setAttribute('fill',on.yellow); }
+  else if(state==='flash'){ if(Math.floor(t*2)%2===0) L.yellow.setAttribute('fill',on.yellow); }
+  else if(state==='arrow'){ L.green.setAttribute('fill',on.green); head.arrow.setAttribute('opacity',1); }
+  else if(state==='arrow-left'){ L.green.setAttribute('fill',on.green); head.arrow.setAttribute('opacity',1); head.arrow.setAttribute('transform','scale(-1 1)'); }
+}
+
+// ---------- actors ----------
+function actorColor(a, idx){
+  if(a.color) return a.color;
+  switch(a.kind){ case 'you': return COL.you; case 'tram': case 'bus': return COL.bvg; case 'bike': return COL.bike; case 'ped': return COL.ped; case 'ambulance': return COL.amb; default: return COL.cars[idx%COL.cars.length]; }
+}
+function drawVehicle(g, a, color){
+  const k = a.kind;
+  if(k==='ped'){ el('circle',{cx:0,cy:0,r:8,fill:color,stroke:'#2b2b2b','stroke-width':2},g); el('circle',{cx:0,cy:-1,r:3.2,fill:'#2b2b2b'},g); return; }
+  if(k==='bike'){ el('rect',{x:-3,y:-16,width:6,height:32,rx:3,fill:'#222'},g); el('circle',{cx:0,cy:0,r:6.5,fill:color,stroke:'#1d4d30','stroke-width':1.5},g); el('circle',{cx:0,cy:-1,r:2.6,fill:'#1d4d30'},g); return; }
+  if(k==='tram'){ el('rect',{x:-13,y:-58,width:26,height:116,rx:8,fill:color,stroke:'#8a7a1a','stroke-width':1.5},g); el('rect',{x:-9,y:-50,width:18,height:100,rx:3,fill:'#4a4630',opacity:.55},g); el('path',{d:'M-9 -20 H9 M-9 20 H9',stroke:color,'stroke-width':3},g); el('rect',{x:-6,y:-57,width:12,height:5,fill:'#ffe9a8'},g); return; }
+  if(k==='bus'){ el('rect',{x:-13,y:-40,width:26,height:80,rx:5,fill:color,stroke:'#8a7a1a','stroke-width':1.5},g); el('rect',{x:-10,y:-32,width:20,height:64,rx:2,fill:'#4a4630',opacity:.55},g); el('rect',{x:-8,y:-40,width:16,height:5,fill:'#ffe9a8'},g); return; }
+  if(k==='ambulance'){ el('rect',{x:-12,y:-24,width:24,height:48,rx:5,fill:color,stroke:'#b32020','stroke-width':2},g); el('rect',{x:-12,y:-4,width:24,height:8,fill:'#d62828'},g); el('rect',{x:-10,y:-16,width:20,height:7,rx:1,fill:'#6fb8ff',opacity:.9},g); el('circle',{cx:0,cy:-19,r:3.5,fill:'#2f7cff',class:'blue'},g); return; }
+  if(k==='you'){
+    // cyclist "you" — larger green bike with YOU label
+    el('rect',{x:-3,y:-18,width:6,height:36,rx:3,fill:'#1a1a1a'},g);
+    el('circle',{cx:0,cy:0,r:9,fill:color,stroke:'#1a5a30','stroke-width':2},g);
+    el('circle',{cx:0,cy:-1,r:3.5,fill:'#1a5a30'},g);
+    txt(g,0,20,'YOU',{'font-size':9,fill:color,'font-weight':'700'});
+    return;
+  }
+  // car
+  el('rect',{x:-12,y:-22,width:24,height:44,rx:6,fill:color,stroke:'#3a3d42','stroke-width':1.5},g);
+  el('rect',{x:-9,y:-14,width:18,height:8,rx:2,fill:'#20242a',opacity:.75},g);
+  el('rect',{x:-9,y:12,width:18,height:5,rx:2,fill:'#20242a',opacity:.55},g);
+  el('rect',{x:-9,y:-22,width:4,height:2.5,fill:'#fff7cf'},g); el('rect',{x:5,y:-22,width:4,height:2.5,fill:'#fff7cf'},g);
+  const side = (a.turn==='left'||a.turn==='leftwide'||a.turn==='uturn') ? -1 : (a.turn==='right'||a.turn==='bikeright') ? 1 : 0;
+  const s = a.indicator!=null ? a.indicator : side;
+  if(s){ const ind = el('g',{class:'ind',opacity:0},g); el('rect',{x:s*9-2,y:-22,width:4,height:3,fill:'#FFB000'},ind); el('rect',{x:s*9-2,y:19,width:4,height:3,fill:'#FFB000'},ind); }
+  if(a.hazard){ const hz = el('g',{class:'ind hazard',opacity:0},g); [-1,1].forEach(s=>{ el('rect',{x:s*9-2,y:-22,width:4,height:3,fill:'#FFB000'},hz); el('rect',{x:s*9-2,y:19,width:4,height:3,fill:'#FFB000'},hz); }); }
+}
+
+class SceneView {
+  constructor(svg, scene, opts){
+    this.svg = svg; this.scene = scene; this.opts = opts||{}; this.quizHidden = false;
+    svg.setAttribute('viewBox', VB); svg.innerHTML='';
+    el('rect',{x:-320,y:-320,width:640,height:640,fill:'var(--ground)'},svg);
+    drawRoad(svg, scene.road||{});
+    (scene.extras||[]).forEach(x=>{ const g=el('g',{},svg); g.innerHTML = x; });
+    this.heads = drawLights(svg, scene.road||{});
+    drawSigns(svg, scene.signs);
+    (scene.labels||[]).forEach(l=> txt(svg,l.x,l.y,l.text,{fill:'var(--ink)','font-size':l.size||13,opacity:.85}));
+    this.groups = {}; (scene.order||[]).forEach((grp,i)=> grp.forEach(id=> this.groups[id]=i));
+    this.intents = el('g',{class:'intents'},svg);
+    this.actorsG = el('g',{class:'actors'},svg);
+    this.badges = el('g',{class:'badges'},svg);
+    this.actors = (scene.actors||[]).map((a,i)=>this.makeActor(a,i));
+    const lastGroup = (scene.order||[]).length-1;
+    this.goTs = []; { let tg=T_FIRST; (scene.order||[]).forEach(grp=>{ this.goTs.push(tg); const mx=Math.max(1, ...grp.map(id=>{ const d=(scene.actors||[]).find(a=>a.id===id)||{}; return d.travel||TRAVEL[d.kind]||2.4; })); tg += Math.max(T_GAP, mx*0.85+0.3); }); }
+    let end = lastGroup>=0 ? this.goTs[lastGroup] + 3.8 : 4.5;
+    this.actors.forEach(a=>{ if(a.def.group==null && !a.def.through && a.def.kind==='ped' && a.def.autoGo) end=Math.max(end, 5); });
+    this.duration = scene.duration || end;
+    this.capTimes = scene.capAt || [0, ...this.goTs.map(g=>g-0.05)];
+    this.keyframes = [...new Set([0, T_ARRIVE+0.15, ...this.capTimes.slice(1), ...this.goTs.map(g=>g-0.05), this.duration])].sort((a,b)=>a-b);
+    this.setTime(0);
+  }
+  makeActor(def, i){
+    const color = actorColor(def, i);
+    const a = { def, color, id:def.id };
+    if(def.static){ a.static=true; a.x=def.x; a.y=def.y; a.angle=def.angle||0; }
+    else {
+      const p = actorPath(def);
+      a.pathEl = el('path',{d:p.d,fill:'none',stroke:'none'},this.svg);
+      a.total = a.pathEl.getTotalLength(); a.stop = Math.min(p.stop, a.total);
+      // intent polyline (from stop point to the end)
+      const pts=[]; for(let k=0;k<=28;k++){ const pt=a.pathEl.getPointAtLength(a.stop + (a.total-a.stop)*k/28); pts.push(pt.x.toFixed(1)+','+pt.y.toFixed(1)); }
+      { const e=a.pathEl.getPointAtLength(a.total); a.endOff = Math.abs(e.x)>300 || Math.abs(e.y)>300; }
+      a.intent = el('polyline',{points:pts.join(' '),fill:'none',stroke:color,'stroke-width':3,'stroke-dasharray':'7 6',opacity:.7,'stroke-linecap':'round'},this.intents);
+      const endPt = a.pathEl.getPointAtLength(a.total), prePt = a.pathEl.getPointAtLength(a.total-6);
+      const ang = Math.atan2(endPt.y-prePt.y, endPt.x-prePt.x)*180/Math.PI;
+      a.intentHead = el('path',{d:'M-10 -6 L0 0 L-10 6',fill:'none',stroke:color,'stroke-width':3,'stroke-linecap':'round',transform:`translate(${endPt.x} ${endPt.y}) rotate(${ang})`,opacity:.7},this.intents);
+      if(def.kind==='ped' || def.noIntent){ a.intent.setAttribute('opacity',0); a.intentHead.setAttribute('opacity',0); }
+    }
+    a.g = el('g',{},this.actorsG); drawVehicle(a.g, def, color);
+    a.ind = a.g.querySelector('.ind:not(.hazard)'); a.hz = a.g.querySelector('.hazard');
+    a.badge = el('g',{opacity:0},this.badges);
+    a.badgeBg = el('rect',{x:-30,y:-11,width:60,height:22,rx:11,fill:'#D23B3B'},a.badge);
+    a.badgeTx = txt(a.badge,0,4,'WARTEN',{'font-size':12,'letter-spacing':'.06em'});
+    a.group = this.groups[def.id]; a.through = !!def.through; a.delay = def.delay||0;
+    a.travel = def.travel || TRAVEL[def.kind] || 2.4;
+    return a;
+  }
+  posOf(a, t){
+    const goT = a.def.goAt!=null ? a.def.goAt : (a.group!=null ? this.goTs[a.group] : null);
+    let len, state;
+    if(a.through){
+      if(goT==null){ len = Math.min(a.total, a.total*ease(t/(this.duration))); state='go'; }
+      else if(t<goT){ len = a.stop*easeOut(Math.max(0,t-a.delay)/(goT-a.delay)); state='approach'; }
+      else { len = a.stop + (a.total-a.stop)*ease((t-goT)/a.travel); state = t>goT+a.travel ? 'done':'go'; }
+    } else {
+      const tA = T_ARRIVE + a.delay;
+      if(t<tA){ len = a.stop*easeOut(Math.max(0,t-a.delay)/T_ARRIVE); state='approach'; }
+      else if(goT==null || t<goT){ len=a.stop; state='wait'; }
+      else { len = a.stop + (a.total-a.stop)*ease((t-goT)/a.travel); state = t>goT+a.travel ? 'done':'go'; }
+    }
+    return { len, state };
+  }
+  setTime(t){
+    this.t = t; const sc = this.scene;
+    // lights
+    if(sc.lights && this.heads){ let cur={}; sc.lights.forEach(k=>{ if(k.at<=t) cur=Object.assign({},cur,k); }); for(const d in this.heads) setLight(this.heads[d], cur[d]||'off', t); }
+    const blink = Math.floor(t*3)%2===0;
+    this.actors.forEach(a=>{
+      let x,y,ang,state='static';
+      if(a.static){ x=a.x; y=a.y; ang=a.angle; state = 'static'; }
+      else {
+        const r = this.posOf(a,t); state=r.state;
+        const p = a.pathEl.getPointAtLength(r.len), q = a.pathEl.getPointAtLength(Math.min(a.total, r.len+2));
+        const p0 = a.pathEl.getPointAtLength(Math.max(0, r.len-2));
+        x=p.x; y=p.y; ang = Math.atan2(q.y-p0.y, q.x-p0.x)*180/Math.PI + 90;
+        const showIntent = state!=='done' && !(a.def.kind==='ped') && !a.def.noIntent && !(a.def.intentOnlyWhenWaiting && state!=='wait');
+        a.intent.setAttribute('opacity', showIntent? .7:0); a.intentHead.setAttribute('opacity', showIntent? .7:0);
+      }
+      a.px=x; a.py=y; a.g.setAttribute('transform',`translate(${x} ${y}) rotate(${ang})`);
+      a.g.setAttribute('opacity', state==='done' && (a.def.fadeOut || a.endOff) ? 0 : 1);
+      if(a.ind){ let on = (a.def.signalAlways || state==='wait' || state==='go' || (state==='approach' && t>0.6)) && blink && a.def.signal!==false;
+        if(a.def.indFrom!=null && !a.static){ const r=this.posOf(a,t); on = blink && (r.len/a.total)>=a.def.indFrom && state!=='done'; }
+        a.ind.setAttribute('opacity', on?1:0); }
+      if(a.hz){ a.hz.setAttribute('opacity', blink?1:0); }
+      const blue = a.g.querySelector('.blue'); if(blue) blue.setAttribute('fill', Math.floor(t*6)%2? '#2f7cff':'#bfe0ff');
+      // badges
+      let show=false;
+      if(!this.quizHidden && !a.static && !a.def.noBadge){
+        if(state==='wait' && !a.through){ show=true; a.badgeBg.setAttribute('fill','#D23B3B'); a.badgeBg.setAttribute('width',60); a.badgeBg.setAttribute('x',-30); a.badgeTx.textContent = a.def.waitText || 'WARTEN'; }
+        else if((state==='go') && a.group!=null){ show=true; a.badgeBg.setAttribute('fill','#2A9D5C'); a.badgeBg.setAttribute('width',24); a.badgeBg.setAttribute('x',-12); a.badgeTx.textContent = String(a.group+1); }
+      }
+      a.badge.setAttribute('opacity', show?1:0);
+      if(show) a.badge.setAttribute('transform',`translate(${x} ${y-32})`);
+    });
+  }
+}
+// ---- Scenes: chapters 1–5 ----
+function fromAngle(a, exit){ // a vehicle arriving from an arm rotated `a` degrees from the south arm
+  const s=rotPt(30,330,a), m=rotPt(30,72,a);
+  const ends={N:'Q 24 24 30 -80 L 30 -330', E:'Q 30 30 80 30 L 330 30', W:'Q -24 -24 -80 -30 L -330 -30', S:'Q -24 24 -30 80 L -30 330'};
+  return `M${s[0]} ${s[1]} L${m[0]} ${m[1]} ${ends[exit]}`;
+}
+const SCENES = [
+// ===== Chapter 1: Right-of-way at crossings =====
+{ id:'bk-rvl-right', ch:1, title:'Car on your right goes first', de:'Rechts vor Links – Auto von rechts',
+  road:{},
+  actors:[{id:'you',kind:'you',from:'S'},{id:'a',kind:'car',from:'E',label:'Car from the right'}],
+  order:[['a'],['you']],
+  captions:['An unsigned crossing. A car comes from your right.','Rechts-vor-Links applies to cyclists too: the car on your right goes first.','The road is clear — you go.'],
+  rule:'At an unsigned crossing the vehicle on your right has priority — whether you are in a car or on a bike. Slow down before the edge, look right, and only enter when clear.',
+  mistake:'Assuming cyclists have special priority or no priority. You follow the same Rechts-vor-Links rules as every other vehicle.',
+  stvo:'§ 8 Abs. 1 StVO' },
+{ id:'bk-rvl-left', ch:1, title:'Car on your left waits for you', de:'Auto von links wartet',
+  road:{},
+  actors:[{id:'you',kind:'you',from:'S'},{id:'a',kind:'car',from:'W',label:'Car from the left'}],
+  order:[['you'],['a']],
+  captions:['A car comes from your left.','You are on its right: you have priority. Go — confidently.','Make eye contact if possible; smaller vehicles are easier to overlook. Then the car goes.'],
+  rule:'When you are to the right of the approaching vehicle, you have priority. Ride assertively rather than hesitating — mixed signals are a common cause of crossing accidents.',
+  mistake:'Waving the car through when you have priority. Take your turn; hesitation confuses drivers.',
+  stvo:'§ 8 Abs. 1 StVO' },
+{ id:'bk-rvl-3way', ch:1, title:'Three vehicles at once', de:'Drei Fahrzeuge gleichzeitig',
+  road:{},
+  actors:[{id:'you',kind:'you',from:'S'},{id:'a',kind:'car',from:'E',label:'Car from right'},{id:'b',kind:'car',from:'W',label:'Car from left'}],
+  order:[['a'],['you'],['b']],
+  captions:['Three vehicles arrive at the same time. Apply Rechts-vor-Links in sequence.','The east car has nobody on its right — it goes first.','Now you: the west car is on your left, so you go next.','The west car goes last.'],
+  rule:'With three vehicles, work out the order by asking "who has a clear right?" repeatedly. It always produces a clear sequence if everyone reads the same rule.',
+  mistake:'Freezing when more than two vehicles arrive. Pick a side, look right, then go or wait.',
+  stvo:'§ 8 Abs. 1 StVO' },
+{ id:'bk-priority-on', ch:1, title:'You are on the priority road', de:'Auf der Vorfahrtstraße',
+  road:{wait:['E','W']}, signs:[{code:'306',at:'S'},{code:'205',at:'E'},{code:'205',at:'W'}],
+  actors:[{id:'you',kind:'you',from:'S'},{id:'a',kind:'car',from:'E',label:'Car on side street'}],
+  order:[['you'],['a']],
+  captions:['Yellow diamond: you are on a priority road. The side street has a give-way triangle.','The car must wait for you — just as it would for any vehicle on the priority road.','Go. Priority roads protect cyclists and cars equally.'],
+  rule:'A cyclist on a priority road has the same right of way as a car. Side streets must yield. Ride visibly and at a speed that lets you stop if a driver fails to see you.',
+  mistake:'Thinking the car will definitely stop. Priority does not mean safe — always be ready to brake.',
+  stvo:'Zeichen 306, § 8 StVO' },
+{ id:'bk-priority-off', ch:1, title:'You are on the side street', de:'Aus der Nebenstraße',
+  road:{wait:['S']}, signs:[{code:'205',at:'S'}],
+  actors:[{id:'you',kind:'you',from:'S'},{id:'a',kind:'car',from:'W',through:true,label:'Car on priority road'}],
+  order:[['a'],['you']],
+  captions:['A give-way triangle: you must yield to the main road.','Wait for the car to pass. Do not roll out expecting the driver to stop.','When clear, join the main road.'],
+  rule:'A give-way triangle means stop or slow to a standstill if necessary — whether you are in a car or on a bike. Cyclists sometimes roll through these at speed. That is a fine and a crash risk.',
+  mistake:'Treating the triangle as a "slow down" sign. If a vehicle is close, stop completely.',
+  stvo:'Zeichen 205, § 8 StVO' },
+
+// ===== Chapter 2: Bike infrastructure =====
+{ id:'bk-radweg', ch:2, title:'Mandatory cycle path: cars must yield', de:'Benutzungspflichtiger Radweg',
+  road:{bike:['NS']}, signs:[{code:'237',x:112,y:260,size:32}],
+  actors:[{id:'you',kind:'you',from:'S',turn:'bike',through:true,travel:3.5},{id:'a',kind:'car',from:'S',turn:'right',delay:.8,label:'Car turning right'}],
+  order:[['you'],['a']],
+  captions:['Sign 237: you must use the cycle path. A car turns right across it.','You are going straight — you have priority over the turning car.','The car must wait for you before crossing the cycle path. Look for it anyway.'],
+  rule:'Sign 237 makes the cycle path mandatory. When a car turns across it, you have priority: the turning driver must yield. This applies even if the path runs on the pavement — watch for drivers who do not check far enough.',
+  mistake:'Assuming the turning car has seen you. Approach turns at a speed you can stop from.',
+  stvo:'Zeichen 237, § 9 Abs. 3 StVO' },
+{ id:'bk-schutzstreifen', ch:2, title:'Dashed lane: your space on the road', de:'Schutzstreifen – gestrichelte Linie',
+  road:{type:'straight',bikeLane:['S']},
+  actors:[{id:'you',kind:'you',path:'M48 330 L48 -330',stop:0,through:true,travel:9},{id:'a',kind:'car',path:'M30 -330 L30 330',stop:0,through:true,travel:9,label:'Car beside'}],
+  order:[['you','a']], duration:9,
+  captions:['The dashed line is a Schutzstreifen — a recommended cyclist lane on the road.','Cars may cross the dashes only when necessary and must not endanger you.','Ride in the middle of the stripe, not the edge — the gutter has drains, gravel, and doors.'],
+  rule:'The Schutzstreifen (Zeichen 340) is not physically exclusive to cyclists, but you have priority within it. A driver who forces you off your line is liable. Ride confidently in the centre of the stripe.',
+  mistake:'Riding at the very right edge of the Schutzstreifen. The space near the kerb and parked cars is the most dangerous part.',
+  stvo:'§ 42 StVO, Zeichen 340' },
+{ id:'bk-radfahrstreifen', ch:2, title:'Solid lane: cars may never cross', de:'Radfahrstreifen – durchgezogene Linie',
+  road:{type:'straight',bikeLane:['S']},
+  actors:[{id:'you',kind:'you',path:'M48 330 L48 -330',stop:0,through:true,travel:9},{id:'a',kind:'car',path:'M30 -330 L30 330',stop:0,through:true,travel:9,label:'Car beside'}],
+  order:[['you','a']], duration:9,
+  captions:['A solid white line marks a Radfahrstreifen — a protected cycle lane. You must use it.','Unlike the dashed Schutzstreifen, cars may never cross this solid line.','Ride with confidence; a driver who enters the solid lane is breaking the law.'],
+  rule:'The Radfahrstreifen (solid line, Zeichen 237) is legally exclusive to cyclists. Cars cannot enter. You must ride in it. It offers stronger protection than the dashed Schutzstreifen.',
+  mistake:'Mixing up solid and dashed lanes. The solid line is harder to see from the bike — look for the sign.',
+  stvo:'§ 41 StVO, Zeichen 237, § 2 Abs. 4 StVO' },
+{ id:'bk-fahrradstrasse', ch:2, title:'Bicycle street: you set the pace', de:'Fahrradstraße',
+  road:{type:'straight'}, signs:[{code:'244.1',x:86,y:260,size:34},{code:'kfzfrei',x:86,y:220,size:28}],
+  actors:[{id:'you',kind:'you',from:'S',through:true,travel:9},{id:'b1',kind:'bike',from:'S',through:true,travel:9,delay:.3,label:'Another cyclist'},{id:'a',kind:'car',from:'S',through:true,travel:9,delay:.8,label:'Car (guest)'}],
+  order:[['you','b1','a']], duration:11,
+  captions:['A Fahrradstraße. The plate says cars are allowed — as guests.','You and other cyclists own the lane; you may ride side by side.','The car follows at your pace — max 30 km/h. It may not push you or overtake at less than 1.5 m.'],
+  rule:'In a bicycle street you set the tempo. Cyclists may ride two abreast. Cars (if the plate allows them) drive at most 30 km/h and must not push or overtake at less than 1.5 m. Honking is a fine.',
+  mistake:'Riding single file to let the car pass. You have priority here — hold your line.',
+  berlin:'Berlin has dozens of bicycle streets: Linienstraße, Bergmannstraße, Stargarder Straße and many Kiez streets. Most say "Anlieger frei" — only local traffic by car.',
+  stvo:'§ 41 StVO, Zeichen 244.1' },
+
+// ===== Chapter 3: Turning =====
+{ id:'bk-turn-right', ch:3, title:'Turning right: signal and yield to pedestrians', de:'Rechtsabbiegen',
+  road:{}, signs:[{code:'306',at:'S'},{code:'306',at:'E'}],
+  actors:[{id:'you',kind:'you',from:'S',turn:'right'},{id:'p',kind:'ped',path:'M132 100 L-100 100',stop:0,noIntent:true,label:'Pedestrian crossing'}],
+  order:[['p'],['you']],
+  captions:['You want to turn right. A pedestrian is crossing the road you are entering.','Signal right early (extend right arm). Pedestrians crossing the entry road have priority.','When the crossing is clear, turn.'],
+  rule:'Turning right, you must yield to pedestrians crossing the road you are entering. Signal early, and check behind for overtaking cyclists before moving right.',
+  mistake:'Cutting the corner tightly. Swing wide enough to see the pavement before committing.',
+  stvo:'§ 9 Abs. 3 StVO' },
+{ id:'bk-turn-left-direct', ch:3, title:'Left turn — direct', de:'Linksabbiegen direkt',
+  road:{bike:['NS']}, signs:[{code:'306',at:'S'},{code:'306',at:'N'},{code:'306',at:'W'}],
+  actors:[{id:'you',kind:'you',from:'S',turn:'left'},{id:'b',kind:'car',from:'N',through:true,label:'Oncoming car'},{id:'bk',kind:'bike',from:'N',turn:'bike',through:true,delay:.5,label:'Oncoming cyclist'}],
+  order:[['b','bk'],['you']],
+  captions:['You want to turn left. Oncoming traffic — a car and a cyclist on the cycle path — comes toward you.','Everything coming straight toward you goes first: cars, cyclists, trams.','Signal left (extend left arm). Wait until clear, then turn.'],
+  rule:'Turning left, yield to all oncoming traffic. The oncoming cyclist on the cycle path is easy to miss — they are faster than they look and often hidden behind parked cars.',
+  mistake:'Watching only the car lane and missing the oncoming cycle path.',
+  stvo:'§ 9 Abs. 3 StVO' },
+{ id:'bk-turn-left-indirect', ch:3, title:'Left turn — two-stage (indirekt)', de:'Indirektes Linksabbiegen',
+  road:{lights:['S','N','E','W']},
+  actors:[{id:'you',kind:'you',from:'S'}],
+  order:[['you']], duration:8,
+  captions:['At a busy junction you can do a safer two-stage left turn: first go straight with the green.','Wait at the far corner facing your new direction.','When the new signal turns green, go. Two-stage — no crossing oncoming traffic.'],
+  rule:'The indirect left turn (indirektes Linksabbiegen) is always allowed and often safer. Cross straight first, wait at the far corner, then go with the next green. No cutting across traffic.',
+  mistake:'Starting the two-stage turn too late — ending up stranded in the junction. Cross all the way to the far kerb.',
+  stvo:'§ 9 StVO' },
+{ id:'bk-leave-lane', ch:3, title:'Leave cycle lane to turn left', de:'Radweg verlassen zum Linksabbiegen',
+  road:{bike:['NS']}, signs:[{code:'237',x:112,y:260,size:30}],
+  actors:[{id:'you',kind:'you',from:'S',turn:'left'},{id:'a',kind:'car',from:'S',through:true,delay:.4,label:'Following car'}],
+  order:[['you'],['a']],
+  captions:['You are on the mandatory cycle path and want to turn left. Merge onto the road early.','Signal left, check behind for cars and cyclists. When safe, move to the left-turn position.','Wait for oncoming traffic, then complete the left turn.'],
+  rule:'To turn left from a cycle path, merge onto the road and position yourself at the centre-line well before the junction. Signal clearly and check behind. Alternatively, use the two-stage indirect turn.',
+  mistake:'Turning left from the cycle path without merging — crossing oncoming traffic diagonally.',
+  stvo:'§ 9 Abs. 1 StVO' },
+
+// ===== Chapter 4: Traffic lights =====
+{ id:'bk-ampel-red', ch:4, title:'Red light means stop — for cyclists too', de:'Rotlicht gilt auch für Radfahrer',
+  road:{lights:['S']},
+  actors:[{id:'you',kind:'you',from:'S'},{id:'a',kind:'car',from:'E',through:true,label:'Crossing traffic'}],
+  order:[['a'],['you']],
+  captions:['The light is red. Crossing traffic has green.','You must stop at the line — red applies to cyclists exactly as to cars.','Running a red light is a €60–100 fine. Wait for green.'],
+  rule:'A red traffic light is binding for cyclists. There are no exceptions — not even at 3 a.m. on an empty road. Running red costs €60–100 and doubles if you endanger someone.',
+  mistake:'Rolling slowly through a red because "the road is clear". Even a slow roll-through is a violation.',
+  stvo:'§ 37 StVO' },
+{ id:'bk-ampel-bike', ch:4, title:'Bike signal controls your phase', de:'Radfahrampel',
+  road:{lights:['S']}, signs:[{code:'237',x:112,y:260,size:30}],
+  actors:[{id:'you',kind:'you',from:'S'},{id:'a',kind:'car',from:'S',through:true,delay:.6,label:'Car (different phase)'}],
+  order:[['you'],['a']],
+  captions:['A separate bike signal (small signal with a bicycle symbol) controls your phase.','When the bike signal turns green you may go — even if the car signal is still red.','Your own bike signal controls you. Ignore the car signal.'],
+  rule:'A dedicated bike signal (Radfahrampel) takes precedence over the adjacent car signal for cyclists. Go when your signal is green. If there is no bike signal, the regular car signal applies to you.',
+  mistake:'Following the car signal when a separate bike signal exists — you may go when you should not, or wait unnecessarily.',
+  stvo:'§ 37 StVO' },
+{ id:'bk-aufstellflaeche', ch:4, title:'Advance box: filter to the front', de:'Aufstellfläche für Radfahrer',
+  road:{lights:['S']},
+  actors:[{id:'you',kind:'you',from:'S'},{id:'a',kind:'car',from:'S',delay:.5,label:'Car behind'}],
+  order:[['you'],['a']], duration:8,
+  captions:['A red light with a marked advance box for cyclists. The box is in front of the car stop line.','During red you may filter to the front and wait in the box. Cars stop behind the rear line.','When green, you set off first — before the cars.'],
+  rule:'The advance box (Aufstellfläche) lets cyclists filter to the front during red. Stop within the box — not in front of it. The front line is your stop line.',
+  mistake:'Stopping in front of the advance box — that is still running the red.',
+  stvo:'§ 41 StVO, Zeichen 297' },
+{ id:'bk-gruenpfeil', ch:4, title:'Green arrow: turn right on red', de:'Grüner Pfeil für Radfahrer',
+  road:{lights:['S'],gruenpfeil:['S']}, signs:[{code:'720',x:112,y:58,size:30}],
+  actors:[{id:'you',kind:'you',from:'S',turn:'right'},{id:'a',kind:'car',from:'W',through:true,label:'Crossing traffic on green'}],
+  order:[['a'],['you']],
+  captions:['A small green arrow plate next to the red light.','You may turn right on red — but only after a full stop, and only if nobody is hindered.','Stop, look, yield to crossing traffic and pedestrians, then turn.'],
+  rule:'The Grünpfeil (Zeichen 720) allows a right turn on red after a complete stop. It applies to cyclists and cars. You must yield to everyone — crossing traffic and pedestrians. A rolling stop is a violation.',
+  mistake:'Treating the green arrow as a general permission to go. You must stop, look both ways, and turn only when clear.',
+  stvo:'§ 37 Abs. 2 StVO, Zeichen 720' },
+
+// ===== Chapter 5: Trams and dooring =====
+{ id:'bk-tram-tracks', ch:5, title:'Cross tram tracks at a wide angle', de:'Straßenbahnschienen queren',
+  road:{type:'straight'}, extras:[`<g><rect x="-320" y="-8" width="640" height="6" fill="#888" opacity=".5"/><rect x="-320" y="6" width="640" height="6" fill="#888" opacity=".5"/></g>`],
+  actors:[{id:'you',kind:'you',path:'M-260 300 L200 -300',stop:0,through:true,travel:8}],
+  order:[['you']], duration:8,
+  captions:['Tram tracks cross your path. Approach at a wide angle — at least 45 degrees.','A narrow angle lets the track groove swallow your front wheel and throw you over the handlebars.','The wider the angle, the more your tyre rolls over the groove rather than into it.'],
+  rule:'Cross tram tracks at a minimum 45-degree angle. If the angle is shallow, slow right down and cross quickly. Never brake on wet metal tracks — they are extremely slippery.',
+  mistake:'Crossing at a shallow angle because it feels faster. Tram-track injuries are common in Berlin.',
+  berlin:'Central Berlin and the east have dense tram networks. Friedrichstraße, Torstraße, Schönhauser Allee — all have tracks cyclists cross daily.',
+  stvo:'§ 1 StVO (general duty of care)' },
+{ id:'bk-dooring', ch:5, title:'The door zone: ride 1 metre out', de:'Dooring — die Türfalle',
+  road:{type:'straight'},
+  actors:[{id:'you',kind:'you',path:'M48 330 L48 -330',stop:0,through:true,travel:9},{id:'a',kind:'car',static:true,x:140,y:80,angle:180,label:'Parked car'}],
+  order:[['you']], duration:9,
+  captions:['Parked cars line the right side of the road.','Ride at least 1 metre from parked cars. A door can open at any moment without warning.','A door hit at cycling speed causes serious injuries. Give yourself room to see and react.'],
+  rule:'Ride at least 1 m from the sides of parked cars. Look for movement inside the car — someone with a seatbelt off or a head turning is about to open a door. If you must pass closer, slow down.',
+  mistake:'Riding in a Schutzstreifen stripe that hugs the parking lane. The stripe is sometimes in the door zone — move left if needed.',
+  berlin:'Dooring is one of the leading causes of serious cycling injury in Berlin. Most streets with kerbside parking have doors swinging into the riding line.',
+  stvo:'§ 14 StVO (obligation of the opener), § 1 StVO (duty of care for the cyclist)' },
+{ id:'bk-tram-stop', ch:5, title:'Tram stop without an island', de:'Haltestelle ohne Mittelinsel',
+  road:{type:'straight'}, signs:[{code:'224',x:86,y:200,size:34}],
+  actors:[{id:'t',kind:'tram',from:'S',through:true,travel:4},{id:'you',kind:'you',path:'M82 330 L82 60',stop:80}],
+  order:[['t'],['you']],
+  captions:['A tram stops ahead. Passengers step directly from the tram onto the road — no island.','You must stop or slow to walking pace. Passengers alighting have priority.','Only continue once the doors are closed and passengers are clear.'],
+  rule:'At a tram stop without a raised island, pedestrians cross the cycle path and road to board or alight. You must yield to them. If the tram shows hazard lights, it is stopping — slow immediately.',
+  mistake:'Squeezing past a stopped tram at speed. People step off expecting the cycle path to be clear.',
+  berlin:'Tram stops without islands are common on narrower streets in Prenzlauer Berg, Mitte and Friedrichshain.',
+  stvo:'§ 20 StVO' },
+
+// ===== Chapter 6: Special cases =====
+{ id:'bk-oneway-free', ch:6, title:'One-way street open both ways for cyclists', de:'Einbahnstraße, Radverkehr frei',
+  road:{oneway:{E:'out'}}, signs:[{code:'267',x:112,y:86,size:34},{code:'1022-10',x:112,y:130,size:30}],
+  actors:[{id:'you',kind:'you',path:'M330 -30 L-330 -30',stop:262,through:true},{id:'a',kind:'car',from:'S',turn:'right',delay:.3,label:'Car turning in'}],
+  order:[['you'],['a']],
+  captions:['"No entry" — but the plate says "Radverkehr frei": you may ride against the one-way direction.','The car turning in must yield to you coming the wrong way.','Look for cars turning in — drivers may not expect a cyclist coming from that direction.'],
+  rule:'"Radverkehr frei" under a no-entry sign opens the one-way for cyclists in the wrong direction. Everyone turning in must yield to you. Most Berlin residential one-way streets have this plate.',
+  mistake:'Assuming all one-way streets are open to cyclists. Check for the plate — if it is missing, you must go the same way as cars.',
+  berlin:'The majority of one-way streets inside the Ring are open to cyclists in both directions.',
+  stvo:'§ 41 StVO, Zusatzzeichen 1022-10' },
+{ id:'bk-living-street', ch:6, title:'Living street: walking pace', de:'Verkehrsberuhigter Bereich',
+  road:{type:'straight',calmed:true}, signs:[{code:'325.1',x:86,y:260}],
+  actors:[{id:'you',kind:'you',from:'S',through:true,travel:9},{id:'k1',kind:'ped',path:'M-90 -40 L60 -60 L90 -160',stop:0,through:true,travel:9,noIntent:true,label:'Child'},{id:'k2',kind:'ped',path:'M70 120 L-40 40 L-90 -120',stop:0,through:true,travel:9,noIntent:true,label:'Child'}],
+  order:[['you']], duration:11,
+  captions:['A living street. Children play in the road. No pavement — the whole street is shared.','Walking pace only (about 7 km/h). Pedestrians and children may use the full width.','When you leave the area you must yield to everyone on the main road.'],
+  rule:'In a living street (Zeichen 325.1) you ride at walking pace. Pedestrians have full right of way. When exiting, you give way to all road users.',
+  mistake:'Riding at 15 km/h because the road looks empty. Children appear suddenly.',
+  stvo:'§ 42 StVO, Zeichen 325.1, § 10 StVO' },
+{ id:'bk-sidewalk', ch:6, title:'Pavement riding is generally forbidden', de:'Fahren auf dem Gehweg',
+  road:{type:'straight'}, signs:[{code:'239',x:86,y:260,size:34}],
+  actors:[{id:'you',kind:'you',from:'S',through:true,travel:9},{id:'p',kind:'ped',path:'M132 100 L-132 100',stop:0,through:true,noIntent:true,travel:9,label:'Pedestrian'}],
+  order:[['you']], duration:9,
+  captions:['As an adult cyclist you must ride on the road or a signed cycle path — not the pavement.','Exception: a "Gehweg, Radfahrer frei" sign explicitly allows cyclists, at walking pace.','Children under 8 must use the pavement; children 8–10 may. Adults must not.'],
+  rule:'Cycling on the pavement is forbidden for adults unless a sign explicitly permits it. If you are allowed, walk pace only and pedestrians have priority.',
+  mistake:'Using the pavement to avoid a busy road. Pedestrians do not expect cyclists behind them — it is a €25 fine and causes collisions.',
+  stvo:'§ 2 Abs. 1 StVO, Zeichen 239' },
+{ id:'bk-railway', ch:6, title:'Railway crossing', de:'Bahnübergang',
+  road:{type:'straight'}, signs:[{code:'201',x:86,y:240,size:36}],
+  actors:[{id:'you',kind:'you',from:'S',stop:40}],
+  order:[['you']], duration:7,
+  captions:['An Andreaskreuz: a railway or tram crossing ahead. Slow down.','Stop before the barrier or the line on the road.','Trains have absolute priority. Do not race the barrier or enter if you would have to wait on the tracks.'],
+  rule:'At a railway or tram crossing, trains have absolute priority. Stop before the barrier. If no barriers, stop at the cross sign and proceed only when clearly safe in both directions.',
+  mistake:'Rushing across when the barrier starts to come down. Barriers come down before the train is visible.',
+  stvo:'§ 19 StVO, Zeichen 201' },
+];
+// ---- App: routing, views, player ----
+const CHAPTERS = [
+  { n:1, title:'Right-of-way at crossings', de:'Vorfahrt', desc:'Rechts-vor-Links, priority roads and give-way triangles — all apply to cyclists exactly as to cars.' },
+  { n:2, title:'Bike infrastructure', de:'Radwege & Straßen', desc:'Mandatory cycle paths, dashed and solid lanes, bicycle streets — where you must ride and who yields.' },
+  { n:3, title:'Turning', de:'Abbiegen', desc:'Right turns, direct and two-stage left turns, and leaving the cycle lane safely.' },
+  { n:4, title:'Traffic lights', de:'Ampeln', desc:'Bike signals, the advance box, the green arrow, and why red always means stop.' },
+  { n:5, title:'Trams and dooring', de:'Straßenbahn & Türen', desc:'Crossing tram tracks, the door zone, and what to do at a tram stop without an island.' },
+  { n:6, title:'Special cases', de:'Sonderfälle', desc:'One-way streets open both ways, living streets, sidewalk rules, and railway crossings.' },
+];
+const $ = (s,p)=> (p||document).querySelector(s);
+const main = $('#main'), nav = $('#nav');
+let player = null;
+
+function route(){ const h = location.hash.replace('#','') || 'home'; const [k, v] = h.split('/');
+  if(player){ player.stop(); player=null; }
+  if(k==='s') renderScene(v); else if(k==='ch') renderChapter(+v); else if(k==='signs') renderGlossary(); else renderHome();
+  renderNav(k, v); window.scrollTo(0,0); }
+window.addEventListener('hashchange', route);
+
+function renderNav(k, v){
+  const cur = k==='s' ? SCENES.find(s=>s.id===v) : null; const curCh = k==='ch' ? +v : cur ? cur.ch : null;
+  nav.innerHTML = `<button data-h="home" ${k==='home'||k===''?'aria-current="true"':''}><span class="num">⌂</span>Start</button>
+    <div class="eyebrow">Chapters</div>` +
+    CHAPTERS.map(c=>`<button data-h="ch/${c.n}" ${curCh===c.n?'aria-current="true"':''}><span class="num">${c.n}</span><span>${c.title}</span><span class="cnt">${SCENES.filter(s=>s.ch===c.n).length}</span></button>`).join('') +
+    `<div class="sep"></div><button data-h="signs" ${k==='signs'?'aria-current="true"':''}><span class="num">▲</span>Sign glossary</button>`;
+  nav.querySelectorAll('button').forEach(b=> b.onclick=()=> location.hash = b.dataset.h);
+}
+
+function thumb(scene, t){ const svg = document.createElementNS(NS,'svg'); const v = new SceneView(svg, scene); v.quizHidden=true; v.setTime(t==null?T_ARRIVE+0.1:t); v.actors.forEach(a=>{ if(a.intent){ a.intent.setAttribute('opacity',.7); a.intentHead.setAttribute('opacity',.7);} }); return svg; }
+
+function renderHome(){
+  main.innerHTML = `<div class="hero"><div>
+      <div class="crumb">Berlin · cycling guide</div>
+      <h2>Rules of the road for Berlin cyclists</h2>
+      <p>${SCENES.length} animated situations from the streets of Berlin. <b style="color:var(--go)">You are always the green cyclist</b>. Press play, watch who waits and who goes, then try quiz mode.</p>
+      <p>Rules follow the German StVO as of 2026; the Berlin notes cover what is specific to cycling here — tram tracks, door zones, one-way streets open both ways, and bicycle streets.</p>
+      <p><button class="controls-inline" id="startBtn" style="background:var(--go);color:#fff;padding:10px 16px;border-radius:8px;font-weight:600;margin-top:6px">Start with chapter 1 →</button></p>
+    </div><div class="stage" id="heroStage"></div></div>
+    <div class="card" style="margin-bottom:22px"><h3>How to read the scenes</h3><div class="legend">
+      <div><i style="background:${COL.you};border-radius:50%;height:14px"></i>You (cyclist)</div><div><i style="background:${COL.cars[0]}"></i>Cars</div><div><i style="background:${COL.bvg}"></i>Tram / BVG bus</div><div><i style="background:${COL.bike};border-radius:50%;height:14px"></i>Other cyclists</div><div><i style="background:${COL.ped};border-radius:50%;height:14px;border:2px solid #444"></i>Pedestrian</div>
+      <div><i class="badge" style="background:var(--wait)">WARTEN</i>Must wait</div><div><i class="badge" style="background:var(--go)">1</i>Goes first</div><div><i style="width:22px;height:0;border-top:3px dashed ${COL.cars[3]}"></i>Intended path</div>
+    </div></div>
+    <div class="section-title">Chapters</div>
+    <div class="chapters">${CHAPTERS.map(c=>`<button data-h="ch/${c.n}"><span class="num">CHAPTER ${c.n}</span><span class="t">${c.title}</span><span class="d">${c.desc}</span><span class="c">${SCENES.filter(s=>s.ch===c.n).length} scenes</span></button>`).join('')}</div>`;
+  main.querySelectorAll('[data-h]').forEach(b=> b.onclick=()=> location.hash=b.dataset.h);
+  $('#startBtn').onclick = ()=> location.hash = 's/'+SCENES.find(s=>s.ch===1).id;
+  const demo = SCENES.find(s=>s.id==='bk-rvl-3way') || SCENES[0];
+  const svg = document.createElementNS(NS,'svg'); $('#heroStage').appendChild(svg);
+  player = new Player(new SceneView(svg, demo), null); player.loop = true; player.play();
+}
+
+function renderChapter(n){
+  const c = CHAPTERS.find(x=>x.n===n); const list = SCENES.filter(s=>s.ch===n);
+  main.innerHTML = `<div class="crumb">Chapter ${n} · <i>${c.de}</i></div><div class="scene-head"><h2>${c.title}</h2><p class="de">${c.desc}</p></div>
+    <div class="scenelist" style="margin-top:18px">${list.map(s=>`<button data-id="${s.id}"><div class="th"></div><div class="t">${s.title}<span class="de">${s.de||''}</span></div></button>`).join('')}</div>`;
+  main.querySelectorAll('[data-id]').forEach((b,i)=>{ b.querySelector('.th').appendChild(thumb(list[i])); b.onclick=()=> location.hash='s/'+b.dataset.id; });
+}
+
+function renderGlossary(){
+  main.innerHTML = `<div class="crumb">Reference</div><div class="scene-head"><h2>Sign glossary</h2><p class="de">Every sign used in the scenes, with its official number. Tap "used in" to jump to a situation.</p></div>
+    <div class="gloss" style="margin-top:18px">${Object.keys(SIGNS).map(code=>{ const s=SIGNS[code]; const used = SCENES.filter(sc=>(sc.signs||[]).some(x=>x.code===code));
+      return `<div class="g">${signSVG(code,56)}<div><b>${s.name}</b><span class="code">${/^\d/.test(code)?'Zeichen '+code:''}</span><p><b style="color:var(--ink)">${s.en}.</b> ${s.desc}</p>${used.length?`<p>Used in: ${used.slice(0,3).map(u=>`<a href="#s/${u.id}">${u.title}</a>`).join(' · ')}</p>`:''}</div></div>`; }).join('')}</div>`;
+}
+
+const BASE_RATE = 0.7; // global playback pace (1 = real-time of the scene timeline)
+const ICON = { play:'<svg viewBox="0 0 16 16"><path d="M4 2l10 6-10 6z"/></svg>', pause:'<svg viewBox="0 0 16 16"><path d="M3 2h4v12H3zM9 2h4v12H9z"/></svg>', step:'<svg viewBox="0 0 16 16"><path d="M3 2l8 6-8 6zM12 2h2v12h-2z"/></svg>', replay:'<svg viewBox="0 0 16 16"><path d="M8 3a5 5 0 1 1-4.5 2.8l1.8.9A3 3 0 1 0 8 5v2L4 4l4-3z"/></svg>' };
+
+function renderScene(id){
+  const idx = SCENES.findIndex(s=>s.id===id); if(idx<0){ location.hash='home'; return; }
+  const s = SCENES[idx], c = CHAPTERS.find(x=>x.n===s.ch); const prev = SCENES[idx-1], next = SCENES[idx+1];
+  const chIdx = SCENES.filter(x=>x.ch===s.ch).findIndex(x=>x.id===id)+1, chCount = SCENES.filter(x=>x.ch===s.ch).length;
+  try{ localStorage.setItem('bk-bike-last', id); }catch(e){}
+  main.innerHTML = `<div class="topbar"><div class="crumb">Chapter ${s.ch} · <b>${c.title}</b></div><div class="progress">scene ${chIdx} / ${chCount} · ${idx+1} of ${SCENES.length}</div></div>
+    <div class="scene-head"><h2>${s.title}</h2><p class="de">${s.de||''}</p></div>
+    <div class="grid">
+      <div>
+        <div class="stage"><svg id="stage"></svg>
+          <div class="timeline" id="tl"><i></i></div>
+          <div class="caption" id="cap"></div>
+          <div class="quiz hidden" id="quiz"></div>
+          <div class="controls">
+            <button class="primary" id="btnPlay">${ICON.play} Play</button>
+            <button id="btnStep" title="Jump to the next moment">${ICON.step} Step</button>
+            <button id="btnReplay">${ICON.replay} Replay</button>
+            <button id="btnSpeed" title="Slow motion">½×</button>
+            <span class="spacer"></span>
+            <button id="btnQuiz" title="Hide the answer and guess first">Quiz mode</button>
+          </div>
+        </div>
+      </div>
+      <div class="explain">
+        <div class="card rule"><h3>The rule</h3>${s.rule.split('\n').map(p=>`<p>${p}</p>`).join('')}${s.stvo?`<span class="stvo">${s.stvo}</span>`:''}</div>
+        ${s.mistake?`<div class="card mistake"><h3>Common mistake</h3><p>${s.mistake}</p></div>`:''}
+        ${s.berlin?`<div class="card berlin"><h3>Berlin note</h3><p>${s.berlin}</p></div>`:''}
+        ${(s.signs&&s.signs.length)?`<div class="card"><h3>Signs in this scene</h3><div class="signs">${[...new Set(s.signs.map(x=>x.code))].map(code=>`<div class="s">${signSVG(code,38)}<div><b>${SIGNS[code].name}</b><span>${SIGNS[code].en}</span></div></div>`).join('')}</div></div>`:''}
+      </div>
+    </div>
+    <div class="pager">${prev?`<button id="prevBtn"><small>← Previous</small><span>${prev.title}</span></button>`:'<span></span>'}${next?`<button id="nextBtn" class="next"><small>Next →</small><span>${next.title}</span></button>`:''}</div>`;
+  if(prev) $('#prevBtn').onclick=()=> location.hash='s/'+prev.id; if(next) $('#nextBtn').onclick=()=> location.hash='s/'+next.id;
+  const view = new SceneView($('#stage'), s);
+  player = new Player(view, { tl:$('#tl'), cap:$('#cap'), quiz:$('#quiz'), play:$('#btnPlay'), step:$('#btnStep'), replay:$('#btnReplay'), speed:$('#btnSpeed'), quizBtn:$('#btnQuiz') });
+  try{ if(localStorage.getItem('bk-quiz')==='1') player.setQuiz(true); }catch(e){}
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!reduce) player.play();
+}
+
+class Player {
+  constructor(view, ui){ this.view=view; this.ui=ui; this.speed=1; this.playing=false; this.loop=false; this.quiz=false; this.quizAsked=false; this.t=0; this.last=null; this.render(0);
+    if(ui){ ui.play.onclick=()=> this.playing? this.pause(): this.play(); ui.step.onclick=()=> this.step(); ui.replay.onclick=()=> this.replay(); ui.speed.onclick=()=> this.toggleSpeed(); ui.quizBtn.onclick=()=> this.setQuiz(!this.quiz);
+      const kf = view.keyframes; ui.tl.innerHTML='<i></i>'+kf.map(k=>`<b style="left:${(k/view.duration*100).toFixed(1)}%"></b>`).join('');
+      ui.tl.onclick=(e)=>{ const r=ui.tl.getBoundingClientRect(); this.t = (e.clientX-r.left)/r.width*view.duration; this.render(this.t); }; }
+  }
+  play(){ if(this.t>=this.view.duration-0.01) this.t=0; this.playing=true; this.last=null; if(this.ui) this.ui.play.innerHTML=ICON.pause+' Pause'; this.raf=requestAnimationFrame(ts=>this.tick(ts)); }
+  pause(){ this.playing=false; cancelAnimationFrame(this.raf); if(this.ui) this.ui.play.innerHTML=ICON.play+' Play'; }
+  stop(){ this.pause(); }
+  replay(){ this.t=0; this.quizAsked=false; if(this.quiz){ this.view.quizHidden=true; this.ui.quiz.classList.add('hidden'); } this.render(0); this.play(); }
+  step(){ const kf=this.view.keyframes; const nxt = kf.find(k=>k>this.t+0.05); this.pause(); this.t = nxt!=null? nxt : this.view.duration; this.render(this.t); }
+  toggleSpeed(){ this.speed = this.speed===1? .5 : 1; this.ui.speed.classList.toggle('on', this.speed!==1); }
+  setQuiz(on){ this.quiz=on; try{ localStorage.setItem('bk-quiz', on?'1':'0'); }catch(e){} this.ui.quizBtn.classList.toggle('on',on); this.replay(); if(!on){ this.view.quizHidden=false; this.ui.quiz.classList.add('hidden'); this.render(this.t);} }
+  tick(ts){ if(!this.playing) return; if(this.last==null) this.last=ts; const dt=(ts-this.last)/1000*this.speed*BASE_RATE; this.last=ts; this.t+=dt;
+    if(this.quiz && !this.quizAsked && this.t>=T_ARRIVE+0.3){ this.t=T_ARRIVE+0.3; this.render(this.t); this.askQuiz(); return; }
+    if(this.t>=this.view.duration){ this.t=this.view.duration; this.render(this.t); if(this.loop){ this.t=0; } else { this.pause(); return; } }
+    this.render(this.t); this.raf=requestAnimationFrame(ts2=>this.tick(ts2)); }
+  render(t){ const v=this.view; v.setTime(t); if(!this.ui) return; this.ui.tl.firstChild.style.width=(t/v.duration*100)+'%';
+    const caps = v.scene.captions||[]; let ci=0; for(let i=1;i<caps.length;i++){ if(v.capTimes[i]!=null && t>=v.capTimes[i]) ci=i; }
+    if(this.quiz && v.quizHidden && ci>0) ci=0;
+    const text = caps[ci]||''; this.ui.cap.innerHTML = text? `<span class="stepno">${ci===0?'start':'step '+ci}</span><span>${text}</span>`:''; }
+  askQuiz(){ this.pause(); this.quizAsked=true; const v=this.view, s=v.scene; const q = s.quiz||{}; const ans = q.answer || (s.order&&s.order[0]) || [];
+    const opts = (q.options || v.actors.filter(a=>!a.static && a.def.kind!=='ped').map(a=>a.id));
+    this.ui.quiz.classList.remove('hidden');
+    this.ui.quiz.innerHTML = `<p>${q.q||'Who goes first?'}</p><div class="opts">${opts.map(id=>{ const a=v.actors.find(x=>x.id===id); return `<button data-id="${id}"><span class="dot" style="background:${a?a.color:'#999'}"></span>${a&&a.def.label?a.def.label:id==='you'?'You (cyclist)':id}</button>`; }).join('')}</div><div class="fb"></div>`;
+    this.ui.quiz.querySelectorAll('button').forEach(b=> b.onclick=()=>{ const ok = ans.length===0 || ans.includes(b.dataset.id); const fb=this.ui.quiz.querySelector('.fb'); fb.className='fb '+(ok?'ok':'no'); fb.textContent = ok? '✓ Correct. ' + (q.why||'Watch the animation to see the full order.') : '✗ Not quite. ' + (q.why||'Watch who actually goes first.'); v.quizHidden=false; this.ui.quiz.querySelectorAll('button').forEach(x=>x.disabled=true); setTimeout(()=>this.play(), 900); }); }
+}
+
+// boot
+route();
+
+</script>
+</body>
+</html>
