@@ -78,8 +78,8 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .timeline{height:4px;background:var(--surface-2);position:relative}
 .timeline i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);width:0}
 .timeline b{position:absolute;top:-2px;width:2px;height:8px;background:var(--faint);margin-left:-1px}
-.caption{padding:12px 14px;min-height:56px;font-size:15px;border-top:1px solid var(--line);display:flex;gap:10px;align-items:flex-start}
-.caption .stepno{flex:none;font:500 12px var(--mono);color:var(--accent);background:var(--accent-soft);border-radius:4px;padding:2px 6px;margin-top:2px}
+.caption{padding:12px 14px;min-height:60px;font-size:14px;line-height:1.5;border-top:1px solid var(--line);display:flex;gap:10px;align-items:flex-start;background:var(--surface)}
+.caption .stepno{flex:none;font:600 10px var(--mono);letter-spacing:.06em;color:var(--faint);text-transform:uppercase;padding-top:3px;min-width:36px}
 .quiz{padding:12px 14px;border-top:1px solid var(--line);background:var(--warn-soft)}
 .quiz p{margin:0 0 8px;font-weight:600}
 .quiz .opts{display:flex;flex-wrap:wrap;gap:6px}
@@ -163,9 +163,16 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 }
 @keyframes capEnter { from{ opacity:0; transform:translateY(7px); } to{ opacity:1; transform:translateY(0); } }
 .caption.cap-enter { animation: capEnter .3s ease-out both; }
+@keyframes mainFade { from{ opacity:0; transform:translateY(5px); } to{ opacity:1; transform:translateY(0); } }
+.main.scene-enter { animation: mainFade .22s ease-out both; }
+@media (max-width:900px){
+  .controls{flex-wrap:wrap;gap:6px}
+  .controls button{padding:7px 10px;font-size:12px}
+  .stage > svg{max-height:280px}
+}
 @media (prefers-reduced-motion: reduce){
   .stage *{transition:none!important}
-  .caption.cap-enter{animation:none}
+  .caption.cap-enter,.main.scene-enter{animation:none}
 }
 </style>
 <style>img{max-width:100%}[hidden]{display:none!important}</style>
@@ -915,6 +922,7 @@ function route(){ const h = location.hash.replace('#','') || 'home'; const [k, v
   if(player){ player.stop(); player=null; }
   const fn = document.querySelector('.float-nav'); if(fn) fn.remove();
   if(k==='s') renderScene(v); else if(k==='ch') renderChapter(+v); else if(k==='signs') renderGlossary(); else renderHome();
+  main.classList.remove('scene-enter'); void main.offsetWidth; main.classList.add('scene-enter');
   renderNav(k, v); window.scrollTo(0,0); }
 window.addEventListener('hashchange', route);
 
