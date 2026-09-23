@@ -379,7 +379,9 @@ function drawRoad(svg, road){
     const l=el('path',{d:'M4 66 V330',stroke:paint,'stroke-width':4},g); l.setAttribute('transform',`rotate(${ROT[d]})`);
     const t=txt(g,30,250,'BUS',{fill:paint,'font-size':20}); t.setAttribute('transform',`rotate(${ROT[d]}) rotate(180 30 250)`); }); }
   // zebra crossings
-  (road.zebra||[]).forEach(d=>{ const z=el('g',{fill:paint},g); for(let i=-56;i<60;i+=16) el('rect',{x:i,y:-112,width:9,height:24},z); z.setAttribute('transform',`rotate(${ROT[d]})`); });
+  const autoZ = (type==='cross'||type==='T') && road.zebra!==false;
+  const zebraDirs = road.zebra===false ? [] : (road.zebra||[]).length ? road.zebra : (autoZ ? arms : []);
+  zebraDirs.forEach(d=>{ const z=el('g',{fill:paint,opacity:.5},g); for(let i=-54;i<56;i+=16) el('rect',{x:i,y:-112,width:10,height:26},z); z.setAttribute('transform',`rotate(${ROT[d]})`); });
   // driveway / parking exit on the east side of a straight N-S road
   if(road.driveway){ const dw = el('g',{},g); const y = road.driveway.y||150;
     el('rect',{x:60,y:y-26,width:80,height:52,fill:'var(--kerb)'},dw);
