@@ -458,23 +458,16 @@ function actorColor(a, idx){
 function drawVehicle(g, a, color){
   const k = a.kind;
   if(k==='ped'){ el('circle',{cx:0,cy:0,r:8,fill:color,stroke:'#2b2b2b','stroke-width':2},g); el('circle',{cx:0,cy:-1,r:3.2,fill:'#2b2b2b'},g); return; }
-  if(k==='bike'){ el('rect',{x:-3,y:-16,width:6,height:32,rx:3,fill:'#222'},g); el('circle',{cx:0,cy:0,r:6.5,fill:color,stroke:'#1d4d30','stroke-width':1.5},g); el('circle',{cx:0,cy:-1,r:2.6,fill:'#1d4d30'},g); return; }
+  if(k==='bike'||k==='you'){ el('circle',{cx:0,cy:10,r:7,fill:'none',stroke:'#333','stroke-width':2},g); el('circle',{cx:0,cy:-10,r:7,fill:'none',stroke:'#333','stroke-width':2},g); el('path',{d:'M0 10 L0 -2 L3 -10',fill:'none',stroke:color,'stroke-width':2.5,'stroke-linecap':'round'},g); el('path',{d:'M0 -2 L-3 -10',fill:'none',stroke:color,'stroke-width':2,'stroke-linecap':'round'},g); el('circle',{cx:0,cy:-14,r:3.5,fill:color,stroke:'#1d4d30','stroke-width':1.2},g); return; }
   if(k==='tram'){ el('rect',{x:-13,y:-58,width:26,height:116,rx:8,fill:color,stroke:'#8a7a1a','stroke-width':1.5},g); el('rect',{x:-9,y:-50,width:18,height:100,rx:3,fill:'#4a4630',opacity:.55},g); el('path',{d:'M-9 -20 H9 M-9 20 H9',stroke:color,'stroke-width':3},g); el('rect',{x:-6,y:-57,width:12,height:5,fill:'#ffe9a8'},g); return; }
   if(k==='bus'){ el('rect',{x:-13,y:-40,width:26,height:80,rx:5,fill:color,stroke:'#8a7a1a','stroke-width':1.5},g); el('rect',{x:-10,y:-32,width:20,height:64,rx:2,fill:'#4a4630',opacity:.55},g); el('rect',{x:-8,y:-40,width:16,height:5,fill:'#ffe9a8'},g); return; }
   if(k==='ambulance'){ el('rect',{x:-12,y:-24,width:24,height:48,rx:5,fill:color,stroke:'#b32020','stroke-width':2},g); el('rect',{x:-12,y:-4,width:24,height:8,fill:'#d62828'},g); el('rect',{x:-10,y:-16,width:20,height:7,rx:1,fill:'#6fb8ff',opacity:.9},g); el('circle',{cx:0,cy:-19,r:3.5,fill:'#2f7cff',class:'blue'},g); return; }
-  if(k==='you'){
-    // cyclist "you" — larger green bike with YOU label
-    el('rect',{x:-3,y:-18,width:6,height:36,rx:3,fill:'#1a1a1a'},g);
-    el('circle',{cx:0,cy:0,r:9,fill:color,stroke:'#1a5a30','stroke-width':2},g);
-    el('circle',{cx:0,cy:-1,r:3.5,fill:'#1a5a30'},g);
-    txt(g,0,20,'YOU',{'font-size':9,fill:color,'font-weight':'700'});
-    return;
-  }
-  // car
-  el('rect',{x:-12,y:-22,width:24,height:44,rx:6,fill:color,stroke:'#3a3d42','stroke-width':1.5},g);
-  el('rect',{x:-9,y:-14,width:18,height:8,rx:2,fill:'#20242a',opacity:.75},g);
-  el('rect',{x:-9,y:12,width:18,height:5,rx:2,fill:'#20242a',opacity:.55},g);
-  el('rect',{x:-9,y:-22,width:4,height:2.5,fill:'#fff7cf'},g); el('rect',{x:5,y:-22,width:4,height:2.5,fill:'#fff7cf'},g);
+  // car — body with shoulder-line taper
+  el('path',{d:'M-11 -22 L11 -22 Q13 -22 13 -19 L13 14 Q13 22 10 22 L-10 22 Q-13 22 -13 14 L-13 -19 Q-13 -22 -11 -22 Z',fill:color,stroke:'#3a3d42','stroke-width':1.5},g);
+  el('path',{d:'M-8 -20 L8 -20 L8 -9 L-8 -9 Z',fill:'#20242a',opacity:.8},g); // windscreen
+  el('rect',{x:-7,y:11,width:14,height:5,rx:1.5,fill:'#20242a',opacity:.6},g); // rear window
+  el('rect',{x:-10,y:-23,width:4,height:3,rx:1,fill:'#ffe98a'},g); el('rect',{x:6,y:-23,width:4,height:3,rx:1,fill:'#ffe98a'},g); // headlights
+  el('rect',{x:-10,y:20,width:4,height:3,rx:1,fill:'#cc2200',opacity:.75},g); el('rect',{x:6,y:20,width:4,height:3,rx:1,fill:'#cc2200',opacity:.75},g); // taillights
   const side = (a.turn==='left'||a.turn==='leftwide'||a.turn==='uturn') ? -1 : (a.turn==='right'||a.turn==='bikeright') ? 1 : 0;
   const s = a.indicator!=null ? a.indicator : side;
   if(s){ const ind = el('g',{class:'ind',opacity:0},g); el('rect',{x:s*9-2,y:-22,width:4,height:3,fill:'#FFB000'},ind); el('rect',{x:s*9-2,y:19,width:4,height:3,fill:'#FFB000'},ind); }
