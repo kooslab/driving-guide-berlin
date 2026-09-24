@@ -1,0 +1,39 @@
+---
+interface Props { currentPage?: string; }
+const { currentPage = '' } = Astro.props;
+
+const driving = [
+  { href: '/auto', label: 'Auto guide' },
+  { href: '/bike', label: 'Bike guide' },
+];
+const daily = [
+  { href: '/daily/food',      label: 'Food & drink' },
+  { href: '/daily/transport', label: 'Transport' },
+  { href: '/daily/errands',   label: 'Errands' },
+  { href: '/daily/health',    label: 'Health' },
+  { href: '/daily/admin',     label: 'Admin' },
+  { href: '/daily/housing',   label: 'Housing' },
+  { href: '/daily/airport',   label: 'Airport' },
+];
+const drivingOpen = driving.some(p => currentPage.startsWith(p.href));
+const dailyOpen   = daily.some(p => currentPage.startsWith(p.href));
+---
+<nav class="topnav" aria-label="Site navigation">
+  <span class="topnav-brand">Berlin Guides</span>
+  <details class="topnav-group" open={drivingOpen || undefined}>
+    <summary>Driving</summary>
+    <div class="topnav-dropdown">
+      {driving.map(p => (
+        <a href={p.href} aria-current={currentPage === p.href ? 'page' : undefined}>{p.label}</a>
+      ))}
+    </div>
+  </details>
+  <details class="topnav-group" open={dailyOpen || undefined}>
+    <summary>Daily Life</summary>
+    <div class="topnav-dropdown">
+      {daily.map(p => (
+        <a href={p.href} aria-current={currentPage === p.href ? 'page' : undefined}>{p.label}</a>
+      ))}
+    </div>
+  </details>
+</nav>
