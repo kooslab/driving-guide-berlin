@@ -4,10 +4,11 @@ import DialogueGuide from '../../components/DialogueGuide.astro';
 import * as postamt from '../../data/postamt.js';
 import * as pharmacy from '../../data/pharmacy.js';
 import * as bank from '../../data/bank.js';
-const scenes = [...postamt.scenes, ...pharmacy.scenes, ...bank.scenes];
+import * as gas from '../../data/gas.js';
+const scenes = [...postamt.scenes, ...pharmacy.scenes, ...bank.scenes, ...gas.scenes];
 ---
-<GuideLayout title="Errands — Berlin Daily Guides" description="Post office, pharmacy, and bank in German." currentPage="/daily/errands">
+<GuideLayout title="Errands — Berlin Daily Guides" description="Post office, pharmacy, bank, and gas station in German." currentPage="/daily/errands">
   <DialogueGuide pageTitle="Errands" pageEmoji="🏪"
-    pageDesc="Post office (Postamt), pharmacy (Apotheke), and bank — getting things done in German."
+    pageDesc="Post office (Postamt), pharmacy (Apotheke), bank, and gas station — getting things done in German."
     scenes={scenes} />
 </GuideLayout>
