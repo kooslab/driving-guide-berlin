@@ -1,0 +1,28 @@
+---
+import GuideLayout from '../layouts/GuideLayout.astro';
+import SceneGuide from '../components/SceneGuide.astro';
+---
+<GuideLayout
+  title="Berlin Kreuzung — Auto guide"
+  description="Animated guide to Berlin driving rules: who goes first at crossings, signs, turning, trams, cyclists."
+  currentPage="/auto"
+>
+  <SceneGuide title="Berlin Kreuzung" subtitle="Who goes first, and why" />
+</GuideLayout>
+
+<script>
+import { initApp } from '../lib/app.js';
+import { SCENES, CHAPTERS } from '../data/scenes-auto.js';
+
+initApp(SCENES, CHAPTERS, {
+  guide: 'auto',
+  crumb: 'Berlin · driving guide for the family',
+  heroTitle: 'Who goes first at a Berlin crossing?',
+  heroIntro: 'SCENE_COUNT animated situations from the streets of Berlin. Your car is always the <b style="color:var(--accent)">blue one</b>. Press play, watch who waits and who goes, then try quiz mode.',
+  youLabel: 'You',
+  youColor: '#2F6FDB',
+  startColor: 'var(--accent)',
+  startTextColor: 'var(--accent-ink)',
+  demoSceneId: 'rvl-3',
+});
+</script>

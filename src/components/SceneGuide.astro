@@ -1,0 +1,18 @@
+---
+interface Props { title: string; subtitle: string; }
+const { title, subtitle } = Astro.props;
+---
+<div class="app">
+  <aside class="rail">
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 40 40" aria-hidden="true">
+        <rect x="2" y="2" width="36" height="36" rx="6" fill="#F2D53C"/>
+        <rect x="9" y="9" width="22" height="22" fill="#fff"/>
+        <rect x="13" y="13" width="14" height="14" fill="#F2D53C"/>
+      </svg>
+      <div><h1>{title}</h1><small>{subtitle}</small></div>
+    </div>
+    <nav id="nav" aria-label="Chapters"></nav>
+  </aside>
+  <main class="main" id="main"></main>
+</div>

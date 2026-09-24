@@ -1,0 +1,28 @@
+---
+import GuideLayout from '../layouts/GuideLayout.astro';
+import SceneGuide from '../components/SceneGuide.astro';
+---
+<GuideLayout
+  title="Berlin Radfahren — Bike guide"
+  description="Animated guide to Berlin cycling rules: right-of-way, bike lanes, traffic lights, trams, and special cases."
+  currentPage="/bike"
+>
+  <SceneGuide title="Berlin Radfahren" subtitle="Cycling rules for the streets of Berlin" />
+</GuideLayout>
+
+<script>
+import { initApp } from '../lib/app.js';
+import { SCENES, CHAPTERS } from '../data/scenes-bike.js';
+
+initApp(SCENES, CHAPTERS, {
+  guide: 'bike',
+  crumb: 'Berlin · cycling guide',
+  heroTitle: 'Rules of the road for Berlin cyclists',
+  heroIntro: 'SCENE_COUNT animated situations. <b style="color:var(--go)">You are always the green cyclist.</b> Press play, watch who waits and who goes, then try quiz mode.',
+  youLabel: 'You (cyclist)',
+  youColor: '#3DAE6B',
+  startColor: 'var(--go)',
+  startTextColor: '#fff',
+  demoSceneId: 'bk-rvl-3way',
+});
+</script>
