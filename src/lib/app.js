@@ -11,6 +11,8 @@ const ICON = {
 };
 
 export function initApp(SCENES, CHAPTERS, config) {
+  COL.you = config.youColor || COL.you;
+  const youIsBike = config.guide === 'bike';
   const $ = (s,p)=> (p||document).querySelector(s);
   const main = $('#main'), nav = $('#nav');
   let player = null;
@@ -61,7 +63,7 @@ export function initApp(SCENES, CHAPTERS, config) {
     nav.querySelectorAll('button').forEach(b=> b.onclick=()=> location.hash = b.dataset.h);
   }
 
-  function thumb(scene, t){ const svg = document.createElementNS(NS,'svg'); const v = new SceneView(svg, scene); v.quizHidden=true; v.setTime(t==null?T_ARRIVE+0.1:t); v.actors.forEach(a=>{ if(a.intent){ a.intent.setAttribute('opacity',.7); a.intentHead.setAttribute('opacity',.7);} }); return svg; }
+  function thumb(scene, t){ const svg = document.createElementNS(NS,'svg'); const v = new SceneView(svg, scene, {youIsBike}); v.quizHidden=true; v.setTime(t==null?T_ARRIVE+0.1:t); v.actors.forEach(a=>{ if(a.intent){ a.intent.setAttribute('opacity',.7); a.intentHead.setAttribute('opacity',.7);} }); return svg; }
 
   function renderHome(){
     const isAuto = config.guide === 'auto';
@@ -89,7 +91,7 @@ export function initApp(SCENES, CHAPTERS, config) {
     $('#startBtn').onclick = ()=> location.hash = 's/'+SCENES.find(s=>s.ch===1).id;
     const demo = SCENES.find(s=>s.id===config.demoSceneId) || SCENES[0];
     const svg = document.createElementNS(NS,'svg'); $('#heroStage').appendChild(svg);
-    player = new Player(new SceneView(svg, demo), null); player.loop = true; player.play();
+    player = new Player(new SceneView(svg, demo, {youIsBike}), null); player.loop = true; player.play();
   }
 
   function renderChapter(n){
@@ -141,7 +143,7 @@ export function initApp(SCENES, CHAPTERS, config) {
     if(prev){ const b=document.createElement('button'); b.className='fn-prev'; b.textContent='<- '+prev.title.slice(0,28); b.onclick=()=>location.hash='s/'+prev.id; fn.appendChild(b); }
     if(next){ const b=document.createElement('button'); b.className='fn-next'; b.textContent=next.title.slice(0,28)+' ->'; b.onclick=()=>location.hash='s/'+next.id; fn.appendChild(b); }
     document.body.appendChild(fn);
-    const view = new SceneView($('#stage'), s);
+    const view = new SceneView($('#stage'), s, {youIsBike});
     player = new Player(view, { tl:$('#tl'), cap:$('#cap'), quiz:$('#quiz'), play:$('#btnPlay'), step:$('#btnStep'), replay:$('#btnReplay'), speed:$('#btnSpeed'), quizBtn:$('#btnQuiz') });
     try{ if(localStorage.getItem('bk-quiz')==='1') player.setQuiz(true); }catch(e){}
     const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;

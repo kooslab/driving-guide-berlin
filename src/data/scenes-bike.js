@@ -190,21 +190,33 @@ export const SCENES = [
 
 { id:'bk-bikelane-left-phase2', ch:3, title:'3 car lanes + bike lane: same indirect turn', de:'3 Fahrspuren + Radweg: gleiche Methode',
   road:{bike:['NS'], lights:['S','N','E','W']},
-  lights:[{at:0,S:'green',N:'green',E:'red',W:'red'}],
+  lights:[
+    {at:0,   S:'red',  N:'red',  E:'red',  W:'red'},
+    {at:2.0, S:'green',N:'green',E:'red',  W:'red'},
+    {at:5.8, S:'red',  N:'red',  E:'red',  W:'red'},
+    {at:7.5, S:'red',  N:'red',  E:'green',W:'green'},
+  ],
   extras:[
     `<line x1="20" y1="320" x2="20" y2="85" stroke="var(--paint)" stroke-width="2" stroke-dasharray="14 10" stroke-linecap="round"/>`,
     `<line x1="40" y1="320" x2="40" y2="85" stroke="var(--paint)" stroke-width="2" stroke-dasharray="14 10" stroke-linecap="round"/>`,
     `<rect x="68" y="-88" width="22" height="22" rx="3" fill="var(--go)" opacity="0.25" stroke="var(--go)" stroke-width="1.5" stroke-dasharray="4 3"/>`
   ],
   actors:[
-    {id:'you',kind:'you',path:'M82 330 L82 -66 Q82 -86 58 -86 L-330 -86',stop:0,through:true,travel:5,indicator:-1,indFrom:.88},
-    {id:'a',kind:'car',path:'M50 330 L50 -330',stop:0,through:true,label:'Lane 3 — straight'},
-    {id:'b',kind:'car',path:'M28 330 L28 -330',stop:0,through:true,delay:.3,label:'Lane 2 — straight'},
-    {id:'c',kind:'car',path:'M10 330 L10 72 C10 15 -40 5 -72 -30 L-330 -30',stop:0,through:true,label:'Lane 1 — left turn',indicator:-1,indFrom:.0}
+    {id:'you',kind:'you',path:'M82 330 L82 -66 Q82 -86 58 -86 L-330 -86',stop:248,travel:5,indicator:-1,indFrom:.88},
+    {id:'a',kind:'car',path:'M50 330 L50 -330',stop:248,label:'Lane 3 — straight'},
+    {id:'b',kind:'car',path:'M28 330 L28 -330',stop:248,delay:.3,label:'Lane 2 — straight'},
+    {id:'c',kind:'car',path:'M10 330 L10 72 C10 15 -40 5 -72 -30 L-330 -30',stop:248,label:'Lane 1 — left turn',indicator:-1,indFrom:.0}
   ],
-  order:[['a','b','c'],['you']], duration:14,
-  captions:['Three car lanes beside your bike lane — Lane 1 turns left, lanes 2 and 3 go straight. Green light.','The car lanes clear. You go straight through in your bike lane, same as before. Three lanes or two — your path is identical.','At the far-right corner, curve west. The number of car lanes does not change your procedure.'],
-  rule:'No matter how many car lanes — 2, 3, or more — the indirect left turn from the bike lane is always the same: wait for N-S traffic to clear, go straight through, curve west at the far corner.',
+  order:[['a','b','c','you']],
+  capAt:[0, 1.95, 3.2, 7.5],
+  duration:13,
+  captions:[
+    'Red light. You and all three car lanes arrive at the stop line together.',
+    'Green for N-S traffic — cars and bike all go at the same moment.',
+    'The car lanes clear. You continue straight in the bike lane to the far-right corner (green box).',
+    'At the corner you wait. When E-W gets the next green, you proceed west. Three lanes or two — your path is identical.',
+  ],
+  rule:'No matter how many car lanes — 2, 3, or more — the indirect left turn from the bike lane is always the same: go straight with the N-S green, wait at the far corner, then proceed west on the next green.',
   mistake:'Thinking that fewer cars on a given day makes it safe to merge across all lanes for a direct turn.',
   berlin:'Frankfurter Allee, Karl-Marx-Allee, and Schönhauser Allee all have 2–3 car lanes beside mandatory bike lanes. Indirect left turns are the norm.',
   stvo:'§ 9 StVO' },

@@ -150,14 +150,20 @@ export function drawSigns(svg, signs){
   });
   return g;
 }
-const LIGHT_POS = { S:[86,58], W:[-58,86], N:[-86,-58], E:[58,-86] };
+// Near-side placement: outside junction box (±82), right of approach lanes.
+// E and W lights use y=±40 (centered on E-W road) to avoid overlap with N-S bike-lane column.
+const LIGHT_POS = { S:[62,90], N:[-62,-90], E:[90,-40], W:[-90,40] };
 export function drawLights(svg, road){
   const heads = {};
   if(!road.lights) return heads;
   const g = el('g',{class:'lights'},svg);
   road.lights.forEach(d=>{
     const [x,y] = LIGHT_POS[d];
-    const h = el('g',{transform:`translate(${x} ${y})`},g);
+    // E-W lights are seen from the side in top-down view → rotate 90° to appear horizontal.
+    // E (westbound traffic from right): rotate(90)  → red on left, green on right
+    // W (eastbound traffic from left):  rotate(-90) → red on right, green on left
+    const rot = d==='E' ? ' rotate(90)' : d==='W' ? ' rotate(-90)' : '';
+    const h = el('g',{transform:`translate(${x} ${y})${rot}`},g);
     el('rect',{x:-9,y:-24,width:18,height:48,rx:4,fill:'#111'},h);
     const lamps = { red: el('circle',{cx:0,cy:-14,r:5.5,fill:'#3a1a1a'},h), yellow: el('circle',{cx:0,cy:0,r:5.5,fill:'#3a3418'},h), green: el('circle',{cx:0,cy:14,r:5.5,fill:'#173a22'},h) };
     const arrow = el('path',{d:'M-4 14 H3 M1 11 L4 14 L1 17',stroke:'#0b2a14','stroke-width':1.6,fill:'none',opacity:0},h);
@@ -183,11 +189,48 @@ export function actorColor(a, idx){
   if(a.color) return a.color;
   switch(a.kind){ case 'you': return COL.you; case 'tram': case 'bus': return COL.bvg; case 'bike': return COL.bike; case 'ped': return COL.ped; case 'ambulance': return COL.amb; default: return COL.cars[idx%COL.cars.length]; }
 }
-// drawVehicle: bike.html version — k==='bike'||k==='you' both render the cyclist SVG shape
-export function drawVehicle(g, a, color){
+export function drawVehicle(g, a, color, youIsBike=false){
   const k = a.kind;
   if(k==='ped'){ el('circle',{cx:0,cy:0,r:8,fill:color,stroke:'#2b2b2b','stroke-width':2},g); el('circle',{cx:0,cy:-1,r:3.2,fill:'#2b2b2b'},g); return; }
-  if(k==='bike'||k==='you'){ el('circle',{cx:0,cy:10,r:7,fill:'none',stroke:'#333','stroke-width':2},g); el('circle',{cx:0,cy:-10,r:7,fill:'none',stroke:'#333','stroke-width':2},g); el('path',{d:'M0 10 L0 -2 L3 -10',fill:'none',stroke:color,'stroke-width':2.5,'stroke-linecap':'round'},g); el('path',{d:'M0 -2 L-3 -10',fill:'none',stroke:color,'stroke-width':2,'stroke-linecap':'round'},g); el('circle',{cx:0,cy:-14,r:3.5,fill:color,stroke:'#1d4d30','stroke-width':1.2},g); return; }
+  if(k==='bike'||(k==='you'&&youIsBike)){
+    // drop shadow
+    const sg=el('g',{transform:'translate(3,3.5)',opacity:.22},g);
+    el('ellipse',{cx:0,cy:11,rx:7.5,ry:5,fill:'#000'},sg);
+    el('ellipse',{cx:0,cy:-11,rx:7.5,ry:5,fill:'#000'},sg);
+    el('rect',{x:-4,y:-12,width:8,height:24,rx:4,fill:'#000'},sg);
+    // rear wheel
+    el('ellipse',{cx:0,cy:11,rx:7.5,ry:5,fill:'#1a1a1a',stroke:'#060606','stroke-width':1.5},g);
+    el('ellipse',{cx:0,cy:11,rx:5.3,ry:3.5,fill:'#3e3e3e'},g);
+    el('line',{x1:0,y1:8.7,x2:0,y2:13.3,stroke:'#777','stroke-width':1},g);
+    el('line',{x1:-4.6,y1:10.2,x2:4.6,y2:11.8,stroke:'#777','stroke-width':1},g);
+    el('line',{x1:4.6,y1:10.2,x2:-4.6,y2:11.8,stroke:'#777','stroke-width':1},g);
+    el('ellipse',{cx:0,cy:11,rx:1.6,ry:1.1,fill:'#aaa'},g);
+    // frame — dark underlay + colored tube + highlight shimmer
+    el('path',{d:'M0 10 C1.5 4 1.5 -2 0 -8',fill:'none',stroke:'rgba(0,0,0,.45)','stroke-width':5.5,'stroke-linecap':'round'},g);
+    el('path',{d:'M0 10 C1.5 4 1.5 -2 0 -8',fill:'none',stroke:color,'stroke-width':3.5,'stroke-linecap':'round'},g);
+    el('path',{d:'M0 10 C1.5 4 1.5 -2 0 -8',fill:'none',stroke:'rgba(255,255,255,.24)','stroke-width':1.4,'stroke-linecap':'round'},g);
+    // seat
+    el('ellipse',{cx:.5,cy:9,rx:3.8,ry:2.3,fill:'#1a1a1a',stroke:'#3a3a3a','stroke-width':.8},g);
+    el('ellipse',{cx:-.3,cy:8.3,rx:1.5,ry:.8,fill:'rgba(255,255,255,.18)'},g);
+    // handlebar — dark underlay + chrome + highlight
+    el('path',{d:'M-5.5,-8 L5.5,-8',fill:'none',stroke:'rgba(0,0,0,.4)','stroke-width':3.5,'stroke-linecap':'round'},g);
+    el('path',{d:'M-5.5,-8 L5.5,-8',fill:'none',stroke:'#5a5a5a','stroke-width':2.2,'stroke-linecap':'round'},g);
+    el('path',{d:'M-5.5,-8 L5.5,-8',fill:'none',stroke:'rgba(255,255,255,.32)','stroke-width':.9,'stroke-linecap':'round'},g);
+    // front wheel
+    el('ellipse',{cx:0,cy:-11,rx:7.5,ry:5,fill:'#1a1a1a',stroke:'#060606','stroke-width':1.5},g);
+    el('ellipse',{cx:0,cy:-11,rx:5.3,ry:3.5,fill:'#3e3e3e'},g);
+    el('line',{x1:0,y1:-8.7,x2:0,y2:-13.3,stroke:'#777','stroke-width':1},g);
+    el('line',{x1:-4.6,y1:-10.2,x2:4.6,y2:-11.8,stroke:'#777','stroke-width':1},g);
+    el('line',{x1:4.6,y1:-10.2,x2:-4.6,y2:-11.8,stroke:'#777','stroke-width':1},g);
+    el('ellipse',{cx:0,cy:-11,rx:1.6,ry:1.1,fill:'#aaa'},g);
+    // rider torso
+    el('ellipse',{cx:0,cy:1,rx:5.5,ry:4,fill:color,stroke:'rgba(0,0,0,.42)','stroke-width':1.3},g);
+    el('ellipse',{cx:-1.2,cy:.2,rx:2.2,ry:1.6,fill:'rgba(255,255,255,.22)'},g);
+    // rider head + helmet shine
+    el('circle',{cx:0,cy:-5.5,r:4,fill:color,stroke:'rgba(0,0,0,.42)','stroke-width':1.3},g);
+    el('ellipse',{cx:-.8,cy:-6.9,rx:1.7,ry:1.1,fill:'rgba(255,255,255,.28)'},g);
+    return;
+  }
   if(k==='tram'){ el('rect',{x:-13,y:-58,width:26,height:116,rx:8,fill:color,stroke:'#8a7a1a','stroke-width':1.5},g); el('rect',{x:-9,y:-50,width:18,height:100,rx:3,fill:'#4a4630',opacity:.55},g); el('path',{d:'M-9 -20 H9 M-9 20 H9',stroke:color,'stroke-width':3},g); el('rect',{x:-6,y:-57,width:12,height:5,fill:'#ffe9a8'},g); return; }
   if(k==='bus'){ el('rect',{x:-13,y:-40,width:26,height:80,rx:5,fill:color,stroke:'#8a7a1a','stroke-width':1.5},g); el('rect',{x:-10,y:-32,width:20,height:64,rx:2,fill:'#4a4630',opacity:.55},g); el('rect',{x:-8,y:-40,width:16,height:5,fill:'#ffe9a8'},g); return; }
   if(k==='ambulance'){ el('rect',{x:-12,y:-24,width:24,height:48,rx:5,fill:color,stroke:'#b32020','stroke-width':2},g); el('rect',{x:-12,y:-4,width:24,height:8,fill:'#d62828'},g); el('rect',{x:-10,y:-16,width:20,height:7,rx:1,fill:'#6fb8ff',opacity:.9},g); el('circle',{cx:0,cy:-19,r:3.5,fill:'#2f7cff',class:'blue'},g); return; }
@@ -259,7 +302,7 @@ export class SceneView {
       a.intentHead = el('path',{d:'M-10 -6 L0 0 L-10 6',fill:'none',stroke:color,'stroke-width':3,'stroke-linecap':'round',transform:`translate(${endPt.x} ${endPt.y}) rotate(${ang})`,opacity:.7},this.intents);
       if(def.kind==='ped' || def.noIntent){ a.intent.setAttribute('opacity',0); a.intentHead.setAttribute('opacity',0); }
     }
-    a.g = el('g',{},this.actorsG); drawVehicle(a.g, def, color);
+    a.g = el('g',{},this.actorsG); drawVehicle(a.g, def, color, this.opts.youIsBike||false);
     a.ind = a.g.querySelector('.ind:not(.hazard)'); a.hz = a.g.querySelector('.hazard');
     a.badge = el('g',{opacity:0},this.badges);
     a.badgeBg = el('rect',{x:-30,y:-11,width:60,height:22,rx:11,fill:'#D23B3B'},a.badge);
