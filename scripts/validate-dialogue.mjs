@@ -2,7 +2,7 @@ import { pathToFileURL } from 'url';
 import { join } from 'path';
 
 const DATA_DIR = new URL('../src/data/', import.meta.url).pathname;
-const FILES = ['doner','restaurant','supermarket','bakery','cafe',
+const FILES = ['doner','gas','restaurant','supermarket','bakery','cafe',
   'transport','postamt','pharmacy','bank','doctor','admin','housing','airport'];
 
 let errors = 0;
