@@ -159,23 +159,99 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   .float-nav button.fn-next{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
   .float-nav button.fn-next:hover{filter:brightness(1.08)}
 }
-@media (max-width:900px){
-  .app{grid-template-columns:1fr}
-  .rail{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);padding:12px 14px}
-  .rail nav{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
-  .rail nav button{width:auto;white-space:nowrap;padding:6px 10px}
-  .rail nav .cnt,.rail .sep,.rail .eyebrow{display:none}
-  .main{padding:18px 16px 50px}
-  .grid,.hero{grid-template-columns:1fr}
-}
 @keyframes capEnter { from{ opacity:0; transform:translateY(7px); } to{ opacity:1; transform:translateY(0); } }
 .caption.cap-enter { animation: capEnter .3s ease-out both; }
 @keyframes mainFade { from{ opacity:0; transform:translateY(5px); } to{ opacity:1; transform:translateY(0); } }
 .main.scene-enter { animation: mainFade .22s ease-out both; }
-@media (max-width:900px){
-  .controls{flex-wrap:wrap;gap:6px}
-  .controls button{padding:7px 10px;font-size:12px}
-  .stage > svg{max-height:280px}
+
+/* ── Mobile driving guide ─────────────────────────── */
+@media (max-width:760px){
+  /* stack layout */
+  .app{grid-template-columns:1fr !important}
+
+  /* rail: sticky strip below topnav, horizontal scroll */
+  .rail{
+    position:sticky;top:40px;z-index:60;
+    height:auto !important;
+    border-right:none !important;
+    border-bottom:1px solid var(--line);
+    padding:0 !important;
+    overflow:hidden;
+  }
+  .brand{padding:10px 14px 8px;border-bottom:1px solid var(--line);margin-bottom:0}
+  .brand .mark{width:26px;height:26px}
+  .brand h1{font-size:16px}
+  .brand small{display:none}
+  .rail nav{
+    display:flex !important;
+    gap:0;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    padding:0 8px 0;
+    border-bottom:none;
+  }
+  .rail nav::-webkit-scrollbar{display:none}
+  .rail nav button{
+    width:auto !important;
+    white-space:nowrap;
+    padding:10px 12px !important;
+    font-size:13px;
+    border-radius:0;
+    border-bottom:2px solid transparent;
+    margin-bottom:-1px;
+    flex-shrink:0;
+  }
+  .rail nav button[aria-current="true"]{
+    border-bottom-color:var(--accent);
+    background:none;
+    color:var(--accent);
+  }
+  .rail nav .cnt{display:none}
+  .rail .sep,.rail .eyebrow{display:none}
+
+  /* main */
+  .main{padding:16px 14px 80px !important;max-width:100%}
+
+  /* hero: single column, no canvas preview */
+  .hero{grid-template-columns:1fr !important;gap:16px}
+  #heroStage{display:none}
+  .hero h2{font-size:clamp(24px,7vw,36px) !important;margin-bottom:8px}
+  .hero p{font-size:15px}
+  .chapters{grid-template-columns:1fr}
+
+  /* scene view: canvas first, explanation below */
+  .grid{grid-template-columns:1fr !important;gap:16px}
+
+  /* canvas: full width, taller */
+  .stage > svg{max-height:none !important;width:100%;aspect-ratio:4/3}
+
+  /* controls: big touch targets */
+  .controls{display:flex;flex-wrap:wrap;gap:8px;padding:12px}
+  .controls button{
+    flex:1 1 auto;
+    padding:12px 10px !important;
+    font-size:14px !important;
+    min-height:48px;
+    justify-content:center;
+  }
+  .controls .spacer{display:none}
+
+  /* caption */
+  .caption{font-size:15px;padding:14px}
+
+  /* topbar */
+  .topbar{flex-direction:column;align-items:flex-start;gap:2px;margin-bottom:10px}
+  .progress{display:none}
+  .scene-head h2{font-size:clamp(22px,6vw,32px)}
+
+  /* pager: full-width stacked */
+  .pager{flex-direction:column;gap:8px;margin-top:16px}
+  .pager button,.pager button.next{max-width:100% !important;margin-left:0 !important}
+
+  /* scenelist thumbnails: 2-col */
+  .scenelist{grid-template-columns:repeat(2,1fr)}
+  .gloss{grid-template-columns:1fr}
 }
 @media (prefers-reduced-motion: reduce){
   .stage *{transition:none!important}
