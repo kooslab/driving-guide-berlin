@@ -37,3 +37,10 @@ const dailyOpen   = daily.some(p => currentPage.startsWith(p.href));
     </div>
   </details>
 </nav>
+<script>
+document.addEventListener('click', (e) => {
+  document.querySelectorAll('.topnav-group[open]').forEach(el => {
+    if (!el.contains(e.target)) el.removeAttribute('open');
+  });
+});
+</script>
