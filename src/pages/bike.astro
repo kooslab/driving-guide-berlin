@@ -14,7 +14,7 @@ import SceneGuide from '../components/SceneGuide.astro';
 import { initApp } from '../lib/app.js';
 import { SCENES, CHAPTERS } from '../data/scenes-bike.js';
 
-initApp(SCENES, CHAPTERS, {
+const config = {
   guide: 'bike',
   crumb: 'Berlin · cycling guide',
   heroTitle: 'Rules of the road for Berlin cyclists',
@@ -24,5 +24,7 @@ initApp(SCENES, CHAPTERS, {
   startColor: 'var(--go)',
   startTextColor: '#fff',
   demoSceneId: 'bk-rvl-right',
-});
+};
+
+document.addEventListener('astro:page-load', () => initApp(SCENES, CHAPTERS, config));
 </script>

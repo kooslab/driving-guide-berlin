@@ -1,5 +1,6 @@
 ---
 import NavBar from '../components/NavBar.astro';
+import { ViewTransitions } from 'astro:transitions';
 interface Props { title: string; description?: string; currentPage?: string; }
 const { title, description = 'Berlin guides — driving, cycling, and daily life in German.', currentPage = '' } = Astro.props;
 ---
@@ -11,8 +12,9 @@ const { title, description = 'Berlin guides — driving, cycling, and daily life
 <meta name="description" content={description}>
 <title>{title}</title>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<ViewTransitions />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@500&display=swap">
-<style>
+<style is:global>
 :root{
   --bg:#F3F4F1; --surface:#FFFFFF; --surface-2:#E9EBE6; --line:#D3D6CF;
   --ink:#1B1F26; --muted:#5C6470; --faint:#8A919B;
