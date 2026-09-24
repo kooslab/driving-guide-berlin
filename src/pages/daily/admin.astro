@@ -1,0 +1,10 @@
+---
+import GuideLayout from '../../layouts/GuideLayout.astro';
+import DialogueGuide from '../../components/DialogueGuide.astro';
+import * as admin from '../../data/admin.js';
+---
+<GuideLayout title="Admin — Berlin Daily Guides" description="Bürgeramt, appointments, and forms in German." currentPage="/daily/admin">
+  <DialogueGuide pageTitle="Admin & Registration" pageEmoji="📋"
+    pageDesc="Termins, Bürgeramt registration, and form-filling — bureaucracy in German."
+    scenes={admin.scenes} />
+</GuideLayout>

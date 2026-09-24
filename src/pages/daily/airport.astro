@@ -1,0 +1,10 @@
+---
+import GuideLayout from '../../layouts/GuideLayout.astro';
+import DialogueGuide from '../../components/DialogueGuide.astro';
+import * as airport from '../../data/airport.js';
+---
+<GuideLayout title="Airport — Berlin Daily Guides" description="Check-in, security, and more at BER, in German." currentPage="/daily/airport">
+  <DialogueGuide pageTitle="Airport (BER)" pageEmoji="✈️"
+    pageDesc="Check-in, security, boarding gate, and lost luggage — navigating BER in German."
+    scenes={airport.scenes} />
+</GuideLayout>

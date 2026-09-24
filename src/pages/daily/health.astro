@@ -1,0 +1,10 @@
+---
+import GuideLayout from '../../layouts/GuideLayout.astro';
+import DialogueGuide from '../../components/DialogueGuide.astro';
+import * as doctor from '../../data/doctor.js';
+---
+<GuideLayout title="Health — Berlin Daily Guides" description="Doctor appointments and visits in German." currentPage="/daily/health">
+  <DialogueGuide pageTitle="Health" pageEmoji="🩺"
+    pageDesc="Making appointments by phone and visiting the doctor — in German."
+    scenes={doctor.scenes} />
+</GuideLayout>

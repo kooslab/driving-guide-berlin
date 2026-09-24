@@ -1,0 +1,10 @@
+---
+import GuideLayout from '../../layouts/GuideLayout.astro';
+import DialogueGuide from '../../components/DialogueGuide.astro';
+import * as housing from '../../data/housing.js';
+---
+<GuideLayout title="Housing — Berlin Daily Guides" description="Landlord calls and moving in, in German." currentPage="/daily/housing">
+  <DialogueGuide pageTitle="Housing" pageEmoji="🏠"
+    pageDesc="Reporting repairs, collecting keys, and moving in — landlord conversations in German."
+    scenes={housing.scenes} />
+</GuideLayout>

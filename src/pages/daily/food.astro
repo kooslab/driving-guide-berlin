@@ -1,0 +1,15 @@
+---
+import GuideLayout from '../../layouts/GuideLayout.astro';
+import DialogueGuide from '../../components/DialogueGuide.astro';
+import * as doner from '../../data/doner.js';
+import * as restaurant from '../../data/restaurant.js';
+import * as supermarket from '../../data/supermarket.js';
+import * as bakery from '../../data/bakery.js';
+import * as cafe from '../../data/cafe.js';
+const scenes = [...doner.scenes, ...restaurant.scenes, ...supermarket.scenes, ...bakery.scenes, ...cafe.scenes];
+---
+<GuideLayout title="Food & Drink — Berlin Daily Guides" description="Ordering at Döner stands, restaurants, supermarkets, bakeries, and cafés in German." currentPage="/daily/food">
+  <DialogueGuide pageTitle="Food & Drink" pageEmoji="🍽️"
+    pageDesc="Common conversations at Berlin food spots — Döner, restaurants, supermarkets, bakeries, and cafés."
+    scenes={scenes} />
+</GuideLayout>

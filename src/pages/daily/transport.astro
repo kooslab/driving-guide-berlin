@@ -1,0 +1,10 @@
+---
+import GuideLayout from '../../layouts/GuideLayout.astro';
+import DialogueGuide from '../../components/DialogueGuide.astro';
+import * as transport from '../../data/transport.js';
+---
+<GuideLayout title="Transport — Berlin Daily Guides" description="U-Bahn tickets, Uber/Bolt, taxis, and buses in German." currentPage="/daily/transport">
+  <DialogueGuide pageTitle="Transport" pageEmoji="🚇"
+    pageDesc="U-Bahn tickets, Uber & Bolt, taxis, and asking about the bus — all in German."
+    scenes={transport.scenes} />
+</GuideLayout>
